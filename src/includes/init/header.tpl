@@ -1,1 +1,3 @@
-<!-- header.tpl -->
+<div class="common-header">
+    <!-- header.tpl -->
+</div>

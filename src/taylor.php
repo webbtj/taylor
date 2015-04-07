@@ -116,7 +116,7 @@ class Taylor{
 
         $this->copy_file('includes/init/footer.php', 'footer.php');
         $this->copy_file('includes/init/functions.php', 'functions.php');
-        $this->copy_file('includes/init/header.php', 'header.php');
+        $this->copy_file('includes/init/header.php', 'header.php', $args);
         $this->copy_file('includes/init/home.php', 'home.php');
         $this->copy_file('includes/init/index.php', 'index.php');
         $this->copy_file('includes/init/page-home.php', 'page-home.php');
