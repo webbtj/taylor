@@ -125,6 +125,12 @@ class Taylor{
         $this->copy_file('includes/init/header.tpl', 'templates/includes/header.tpl');
         $this->copy_file('includes/init/footer.tpl', 'templates/includes/footer.tpl');
         $this->copy_file('includes/init/page-home.tpl', 'templates/pages/page-home.tpl');
+
+        if($args['styles'])
+            $this->add_assets($args['styles'], 'css');
+
+        if($args['javascripts'])
+            $this->add_assets($args['javascripts'], 'js');
     }
 
     function create_post_type($args){
@@ -207,6 +213,156 @@ class Taylor{
 
         $filename = $this->file_path('templates/pages/single-' . $type . '.tpl');
         file_put_contents($filename, $output, FILE_APPEND);
+    }
+
+    function add_assets($assets, $type='js'){
+        $includes = array();
+        foreach($assets as &$asset){
+            if(filter_var($asset['path'], FILTER_VALIDATE_URL))
+                $is_url = true;
+            else
+                $is_url = false;
+
+            $is_copy = true;
+            if(isset($asset['copy']) && $asset['copy'] == false)
+                $is_copy = false;
+
+            //if it is a local file it MUST be copied, we're not going to reference local files outside the theme
+            if(!$is_url && strpos($asset['path'], '//') !== 0 )
+                $is_copy = true;
+
+            if($is_copy && $is_url){
+                //copy from remote url
+                $contents = file_get_contents($asset['path']);
+                $path = $this->get_path();
+                if($asset['asset_path'])
+                    $path .= '/' . $asset['asset_path'];
+                $path .= parse_url($asset['path'], PHP_URL_PATH);
+                if(!file_exists(dirname($path)))
+                    mkdir(dirname($path), 0755, true);
+                file_put_contents($path, $contents);
+
+                $includes[] = array(
+                    'file' => str_replace($this->get_path(), '', $path),
+                    'footer' => (bool) $asset['footer'],
+                    'handle' => $this->asset_handle($path),
+                    'reset_jquery' => $this->asset_handle($path) == 'jquery',
+                    'local' => true,
+                    'media' => $asset['media']
+                );
+            }elseif($is_copy){
+                //copy from local file system
+                $source = $this->find_file($asset['path']);
+
+                if(!$source){
+                    print "\nWarning! Asset file `$source` not found!\n";
+                }else{
+                    $destination = $asset['path'];
+                    if($asset['drop_root']){
+                        $parts = explode('/', $destination);
+                        array_shift($parts);
+                        $destination = implode('/', $parts);
+                    }
+                    if($asset['asset_path'])
+                        $destination = $asset['asset_path'] . '/' . $destination;
+                    $destination = $this->get_path() . '/' . $destination;
+
+                    if(!file_exists(dirname($destination)))
+                        mkdir(dirname($destination), 0755, true);
+
+                    file_put_contents($destination, file_get_contents($source));
+
+                    $includes[] = array(
+                        'file' => str_replace($this->get_path(), '', $destination),
+                        'footer' => (bool) $asset['footer'],
+                        'handle' => $this->asset_handle($destination),
+                        'reset_jquery' => $this->asset_handle($destination) == 'jquery',
+                        'local' => true,
+                        'media' => $asset['media']
+                    );
+                }
+
+            }elseif($is_url || strpos($asset['path'], '//') === 0){
+                //use cdn
+                $includes[] = array(
+                    'file' => $asset['path'],
+                    'footer' => (bool) $asset['footer'],
+                    'handle' => $this->asset_handle($asset['path']),
+                    'reset_jquery' => $this->asset_handle($asset['path']) == 'jquery',
+                    'local' => false,
+                    'media' => $asset['media']
+                );
+            }else{
+                //technically shouldn't happen
+            }
+
+        }
+        $output = "";
+        
+        foreach($includes as $include){
+            $handle = $include['handle'];
+            $file = "'" . $include['file'] . "'";
+            if($include['local'])
+                $file = "get_bloginfo('stylesheet_directory') . " . $file;
+            $footer = (int) $include['footer'];
+            $media = '';
+            if($include['media'] && $type == 'css')
+                $media = ", '$media'";
+
+            if($include['reset_jquery'] && $type == 'js')
+                $output .= "\twp_deregister_script('jquery');\n";
+
+            if($type == 'js')
+                $output .= "\twp_enqueue_script('$handle', $file, array(), ASSET_VERSION, $footer);\n";
+            elseif($type == 'css')
+                $output .= "\twp_enqueue_style('$handle', $file, array(), ASSET_VERSION $meida);\n";
+        }
+
+        if($output){
+            $output = "\n$output";
+            if($type == 'js'){
+                $file_output = file_get_contents('includes/init/enqueue_js.php');
+                $file_output = str_replace('[[js_output]]', $output, $file_output);
+            }
+            elseif($type == 'css'){
+                $file_output = file_get_contents('includes/init/enqueue_css.php');
+                $file_output = str_replace('[[css_output]]', $output, $file_output);
+            }
+
+            $filename = $this->file_path('functions.php');
+            file_put_contents($filename, $file_output, FILE_APPEND);
+        }
+    }
+
+    function asset_handle($file_name){
+        $parts = explode('/', $file_name);
+        $file = array_pop($parts);
+        $parts = explode('.', $file);
+        $slug = $parts[0];
+        $slug = strtolower($slug);
+        $slug = preg_replace('/[^a-zA-Z0-9]/', '', $slug);
+        return $slug;
+    }
+
+    function find_file($path){
+        if(!$this->find_file_path)
+            $this->find_file_path = dirname(__FILE__);
+
+        if(!file_exists($this->find_file_path . '/' . $path)){
+
+            if($this->find_file_path == '/'){
+                $this->find_file_path = null;
+                return false;
+            }else{
+                $this->find_file_path = dirname($this->find_file_path);
+                return $this->find_file($path);
+            }
+
+        }else{
+            return $this->find_file_path . '/' . $path;
+        }
+
+        
     }
 }
 
