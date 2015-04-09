@@ -17,7 +17,7 @@ Taylor doesn't require any WordPress plugins to run, though the theme is creates
 ###Road Map
 
 * Advanced Custom Field integration
-* Define assests (js/css) with location (header/footer) in manifest
+* Define assests (js/css) with location (header/footer) in manifest (built, needs more testing)
 * Compress to Phar for portability
 * Install & activate plugins via manifest
 * Set various configuration options via manifest
