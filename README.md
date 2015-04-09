@@ -13,6 +13,7 @@ Taylor doesn't require any WordPress plugins to run, though the theme is creates
 ###Command Line Usage
 
 ###Mainfest Usage
+Aside from regular command line usage, Taylor's real power lies in its manifest file system. Using the manifest file you can automate initial theme setup, asset inclusion (js & css), post type and taxonomy setup. The manifest file is a json file and must be named taylor.manifest.json. The manifest file must be in the same directory as the Taylor script. For technical requirements read the MANIFEST.md document and review the example taylor.manifest.json file included in the src directory.
 
 ###Road Map
 
