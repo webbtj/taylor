@@ -1,0 +1,1 @@
+register_nav_menu('[[menu]]', '[[name]]');

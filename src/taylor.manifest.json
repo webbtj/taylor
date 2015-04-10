@@ -37,6 +37,18 @@
                         "copy" : 1,
                         "asset_path" : "css"
                     }
+                ],
+                "menus" : [
+                    {
+                        "primary" : {
+                            "container" : 0,
+                            "class" : "primary-menu-class",
+                            "name" : "Main Menu"
+                        }
+                    },
+                    {
+                        "footer" : {}
+                    }
                 ]
             }
         },

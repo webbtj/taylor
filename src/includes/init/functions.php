@@ -9,9 +9,7 @@ function wp_smarty(){
 
     /* ALWAYS REMEMEBER TO RESET QUERY!!! */
 
-    //Load Sidebar and Menu Data
-
-    //Load Extra Footer Links (menu and/or social)
+    //Load Menus
 
     //Load social meta
 

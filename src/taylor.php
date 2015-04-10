@@ -131,6 +131,9 @@ class Taylor{
 
         if($args['javascripts'])
             $this->add_assets($args['javascripts'], 'js');
+
+        if($args['menus'])
+            $this->add_menus($args['menus'], 'js');
     }
 
     function create_post_type($args){
@@ -334,6 +337,44 @@ class Taylor{
         }
     }
 
+    function add_menus($menus){
+        $menu_output = "//Load Menus\n";
+        $register_output = "\n\n//Register Menus\n";
+        foreach($menus as $menu){
+            if(!empty($menu)){
+                foreach($menu as $location => $properties){
+
+                    $class = isset($properties['class']) ? $properties['class'] : '';
+                    $container = isset($properties['container']) ? $properties['container'] : 'false';
+                    if(isset($properties['name']))
+                        $name = $properties['name'];
+                    else
+                        $name = preg_replace('/[^a-zA-Z0-9]+/', ' ', $location);
+                    
+                    $content = file_get_contents('includes/init/load_menus.php');
+                    $content = str_replace('[[menu]]', $location, $content);
+                    $content = str_replace('[[class]]', $class, $content);
+                    $content = str_replace('[[container]]', $container, $content);
+
+                    $menu_output .= "$content\n\n";
+
+                    $content = file_get_contents('includes/init/register_menus.php');
+                    $content = str_replace('[[menu]]', $location, $content);
+                    $content = str_replace('[[name]]', $name, $content);
+
+                    $register_output .= "$content\n";
+                }
+            }
+        }
+
+        $filename = $this->file_path('functions.php');
+        file_put_contents($filename, $register_output, FILE_APPEND);
+
+        $functions = file_get_contents($filename);
+        $functions = str_replace('//Load Menus', $menu_output, $functions);
+        file_put_contents($filename, $functions);
+    }
+
     function asset_handle($file_name){
         $parts = explode('/', $file_name);
         $file = array_pop($parts);
@@ -361,8 +402,6 @@ class Taylor{
         }else{
             return $this->find_file_path . '/' . $path;
         }
-
-        
     }
 }
 
