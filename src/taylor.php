@@ -14,7 +14,7 @@ class Taylor{
     function file_get_contents($path){
         $phar = false;
         if($phar)
-            return file_get_contents('phar://' . $path);
+            return file_get_contents('phar://taylor.phar/' . $path);
 
         return file_get_contents($path);
 
@@ -64,7 +64,7 @@ class Taylor{
         if($this->path)
             $this->path = dirname($this->path);
         else
-            $this->path = dirname(__FILE__);
+            $this->path = Phar::running(false) . dirname(__FILE__);
 
         if($this->path == '/')
             throw new Exception("Could not find WordPress theme directory", 1);
@@ -396,7 +396,7 @@ class Taylor{
 
     function find_file($path){
         if(!$this->find_file_path)
-            $this->find_file_path = dirname(__FILE__);
+            $this->find_file_path = Phar::running(false) . dirname(__FILE__);
 
         if(!file_exists($this->find_file_path . '/' . $path)){
 
