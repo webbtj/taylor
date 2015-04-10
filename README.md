@@ -30,3 +30,6 @@ Aside from regular command line usage, Taylor's real power lies in its manifest 
 
 ###Testing
 Testers are always welcome and encouraged. Bugs, questions, and enhancements should be submitted as github issues. You can request "can you integrate with 'Plugin X'?" or "can you use 'Template Engine Y'?", but most likely those specific requests will not be addressed. Part of the road map is to open up the system to allow users to supply their own templates, and another part is to include the downloading and activation of plugins. These future enhancements should allow you to integrate with and plugins and utilize and templating system you choose.
+
+###Open Source
+Of course it's open source. The source code is found in the `src` directory and the main application file is `taylor.php`. You can modify `taylor.php` and then recompile a phar to the `build` directory simply by running `php borland.php` from the `src` directory.
