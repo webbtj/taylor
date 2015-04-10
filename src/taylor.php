@@ -11,6 +11,15 @@ class Taylor{
         $this->do_function($function, $args);
     }
 
+    function file_get_contents($path){
+        $phar = false;
+        if($phar)
+            return file_get_contents('phar://' . $path);
+
+        return file_get_contents($path);
+
+    }
+
     function do_function($function, $args){
         if(method_exists($this, $function))
             $this->$function($args);
@@ -40,7 +49,7 @@ class Taylor{
 
     function init_file($filename, $header_filename){
         if(!file_exists($filename))
-            file_put_contents($filename, file_get_contents($header_filename));
+            file_put_contents($filename, $this->file_get_contents($header_filename));
     }
 
     function set_constants($args){
@@ -84,7 +93,7 @@ class Taylor{
     }
 
     function copy_file($from, $to, $params = null){
-        $output = file_get_contents($from);
+        $output = $this->file_get_contents($from);
         if(!empty($params)){
             foreach($params as $param => $value){
                 $output = str_replace("[[$param]]", $value, $output);
@@ -143,7 +152,7 @@ class Taylor{
 
         extract($args);
 
-        $output = file_get_contents('includes/post-type.php');
+        $output = $this->file_get_contents('includes/post-type.php');
         foreach($required_params as $param){
             $output = str_replace("[[$param]]", $$param, $output);
         }
@@ -166,7 +175,7 @@ class Taylor{
 
         extract($args);
 
-        $output = file_get_contents('includes/taxonomy.php');
+        $output = $this->file_get_contents('includes/taxonomy.php');
         foreach($required_params as $param){
             $output = str_replace("[[$param]]", $$param, $output);
         }
@@ -185,7 +194,7 @@ class Taylor{
 
         $this->check_requirements($required_params, $args);
         extract($args);
-        $output = file_get_contents('includes/page-post_type.php');
+        $output = $this->file_get_contents('includes/page-post_type.php');
         foreach($required_params as $param){
             $output = str_replace("[[$param]]", $$param, $output);
         }
@@ -193,7 +202,7 @@ class Taylor{
         $filename = $this->file_path('page-' . $type . '.php');
         file_put_contents($filename, $output, FILE_APPEND);
 
-        $output = file_get_contents('includes/single-post_type.php');
+        $output = $this->file_get_contents('includes/single-post_type.php');
         foreach($required_params as $param){
             $output = str_replace("[[$param]]", $$param, $output);
         }
@@ -201,7 +210,7 @@ class Taylor{
         $filename = $this->file_path('single-' . $type . '.php');
         file_put_contents($filename, $output, FILE_APPEND);
 
-        $output = file_get_contents('includes/page-post_type.tpl');
+        $output = $this->file_get_contents('includes/page-post_type.tpl');
         foreach($required_params as $param){
             $output = str_replace("[[$param]]", $$param, $output);
         }
@@ -209,7 +218,7 @@ class Taylor{
         $filename = $this->file_path('templates/pages/page-' . $type . '.tpl');
         file_put_contents($filename, $output, FILE_APPEND);
 
-        $output = file_get_contents('includes/single-post_type.tpl');
+        $output = $this->file_get_contents('includes/single-post_type.tpl');
         foreach($required_params as $param){
             $output = str_replace("[[$param]]", $$param, $output);
         }
@@ -324,11 +333,11 @@ class Taylor{
         if($output){
             $output = "\n$output";
             if($type == 'js'){
-                $file_output = file_get_contents('includes/init/enqueue_js.php');
+                $file_output = $this->file_get_contents('includes/init/enqueue_js.php');
                 $file_output = str_replace('[[js_output]]', $output, $file_output);
             }
             elseif($type == 'css'){
-                $file_output = file_get_contents('includes/init/enqueue_css.php');
+                $file_output = $this->file_get_contents('includes/init/enqueue_css.php');
                 $file_output = str_replace('[[css_output]]', $output, $file_output);
             }
 
@@ -351,14 +360,14 @@ class Taylor{
                     else
                         $name = ucwords(preg_replace('/[^a-zA-Z0-9]+/', ' ', $location));
                     
-                    $content = file_get_contents('includes/init/load_menus.php');
+                    $content = $this->file_get_contents('includes/init/load_menus.php');
                     $content = str_replace('[[menu]]', $location, $content);
                     $content = str_replace('[[class]]', $class, $content);
                     $content = str_replace('[[container]]', $container, $content);
 
                     $menu_output .= "$content\n\n";
 
-                    $content = file_get_contents('includes/init/register_menus.php');
+                    $content = $this->file_get_contents('includes/init/register_menus.php');
                     $content = str_replace('[[menu]]', $location, $content);
                     $content = str_replace('[[name]]', $name, $content);
 
