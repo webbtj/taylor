@@ -349,7 +349,7 @@ class Taylor{
                     if(isset($properties['name']))
                         $name = $properties['name'];
                     else
-                        $name = preg_replace('/[^a-zA-Z0-9]+/', ' ', $location);
+                        $name = ucwords(preg_replace('/[^a-zA-Z0-9]+/', ' ', $location));
                     
                     $content = file_get_contents('includes/init/load_menus.php');
                     $content = str_replace('[[menu]]', $location, $content);
