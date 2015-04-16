@@ -1,6 +1,6 @@
 
-add_action('init', 'taylor_taxonomy_register_[[type]]');
-function taylor_taxonomy_register_[[type]]() {
+add_action('init', 'taylor_taxonomy_register_[[type]]_[[taxonomy]]');
+function taylor_taxonomy_register_[[type]]_[[taxonomy]]() {
 
     register_taxonomy('[[taxonomy]]',
         '[[type]]',
