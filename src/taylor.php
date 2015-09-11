@@ -104,6 +104,9 @@ class Taylor{
     }
 
     function init($args){
+        if($args['installations']){
+            $this->installation($args['installations']);
+        }
         $required_params = array('theme_dir', 'project_name');
         $this->check_requirements($required_params, $args);
         $this->set_constants($args);
@@ -143,6 +146,31 @@ class Taylor{
 
         if($args['menus'])
             $this->add_menus($args['menus'], 'js');
+    }
+
+    function installation($software){
+        if(array_key_exists('wordpress', $software)){
+
+            $version = 'latest';
+
+            if(array_key_exists('version', $software['wordpress']))
+                $version = $software['wordpress']['version'];
+
+            $directory = './';
+
+            if(array_key_exists('directory', $software['wordpress']))
+                $directory = $software['wordpress']['directory'];
+
+            if($version != 'latest' && strpos($version, 'wordpress-') !== 0)
+                $version = 'wordpress-' . $version;
+            exec('wget http://wordpress.org/' . $version . '.tar.gz');
+            exec('tar xfz ' . $version . '.tar.gz');
+            exec('mkdir -p ' . $directory);
+            exec('mv wordpress/* ' . $directory);
+            exec('rm -rf ./wordpress/');
+            exec('rm -rf ' . $version . '.tar.gz');
+        }
+        exit;
     }
 
     function create_post_type($args){

@@ -2,6 +2,12 @@
     "commands" : [
         {
             "init" : {
+                "installations" : {
+                    "wordpress" : {
+                        "version" : "latest",
+                        "directory" : "../wp-latest"
+                    }
+                },
                 "theme_dir" : "test_theme",
                 "project_name" : "McInnes Cooper",
                 "project_uri" : "http://mcinnescooper.com",
