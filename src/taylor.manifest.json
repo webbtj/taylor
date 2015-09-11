@@ -15,15 +15,6 @@
                 "author_uri" : "http://sitebynorex.com",
                 "javascripts" : [
                     {
-                        "path" : "mockup/js/main.js",
-                        "asset_path" : "js"
-                    },
-                    {
-                        "path" : "mockup/js/plugins.js",
-                        "drop_root" : 1,
-                        "footer" : 1
-                    },
-                    {
                         "path" : "https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js",
                         "asset_path" : "js"
                     },
@@ -34,10 +25,6 @@
                     }
                 ],
                 "styles" : [
-                    {
-                        "path" : "mockup/bower_components/normalize.css/normalize.css",
-                        "asset_path" : "css"
-                    },
                     {
                         "path" : "http://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0-rc.2/css/select2.min.css",
                         "copy" : 1,

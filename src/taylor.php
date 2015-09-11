@@ -61,10 +61,15 @@ class Taylor{
     }
 
     function set_path(){
-        if($this->path)
+        if(isset($this->path)){
             $this->path = dirname($this->path);
-        else
+        }
+        else{
             $this->path = Phar::running(false) . dirname(__FILE__);
+            if(isset($this->wp_path)){
+                $this->path .= '/' . $this->wp_path;
+            }
+        }
 
         if($this->path == '/')
             throw new Exception("Could not find WordPress theme directory", 1);
@@ -77,7 +82,7 @@ class Taylor{
     }
 
     function get_path(){
-        if(!$this->path)
+        if(!isset($this->path) || !$this->path)
             $this->set_path();
         return $this->path;
     }
@@ -96,7 +101,8 @@ class Taylor{
         $output = $this->file_get_contents($from);
         if(!empty($params)){
             foreach($params as $param => $value){
-                $output = str_replace("[[$param]]", $value, $output);
+                if(is_string($value))
+                    $output = str_replace("[[$param]]", $value, $output);
             }
         }
         $filename = $this->file_path($to);
@@ -169,8 +175,10 @@ class Taylor{
             exec('mv wordpress/* ' . $directory);
             exec('rm -rf ./wordpress/');
             exec('rm -rf ' . $version . '.tar.gz');
+
+            $this->wp_path = $directory;
         }
-        exit;
+        // exit;
     }
 
     function create_post_type($args){
@@ -217,7 +225,7 @@ class Taylor{
     function create_templates($args){
         $required_params = array('type', 'index_name');
 
-        if(!$args['index_name'] && $args['plural'])
+        if(!isset($args['index_name']) && $args['plural'])
             $args['index_name'] = $args['plural'];
 
         $this->check_requirements($required_params, $args);
@@ -263,6 +271,10 @@ class Taylor{
             else
                 $is_url = false;
 
+            $media = null;
+            if(isset($asset['media']))
+                $media = $asset['media'];
+
             $is_copy = true;
             if(isset($asset['copy']) && $asset['copy'] == false)
                 $is_copy = false;
@@ -273,7 +285,14 @@ class Taylor{
 
             if($is_copy && $is_url){
                 //copy from remote url
-                $contents = file_get_contents($asset['path']);
+                $context=array(
+                    "ssl"=>array(
+                        "verify_peer"=>false,
+                        "verify_peer_name"=>false,
+                    ),
+                );
+
+                $contents = file_get_contents($asset['path'], false, stream_context_create($context));
                 $path = $this->get_path();
                 if($asset['asset_path'])
                     $path .= '/' . $asset['asset_path'];
@@ -284,11 +303,11 @@ class Taylor{
 
                 $includes[] = array(
                     'file' => str_replace($this->get_path(), '', $path),
-                    'footer' => (bool) $asset['footer'],
+                    'footer' => (bool) isset($asset['footer']),
                     'handle' => $this->asset_handle($path),
                     'reset_jquery' => $this->asset_handle($path) == 'jquery',
                     'local' => true,
-                    'media' => $asset['media']
+                    'media' => $media
                 );
             }elseif($is_copy){
                 //copy from local file system
@@ -318,7 +337,7 @@ class Taylor{
                         'handle' => $this->asset_handle($destination),
                         'reset_jquery' => $this->asset_handle($destination) == 'jquery',
                         'local' => true,
-                        'media' => $asset['media']
+                        'media' => $media
                     );
                 }
 
@@ -330,7 +349,7 @@ class Taylor{
                     'handle' => $this->asset_handle($asset['path']),
                     'reset_jquery' => $this->asset_handle($asset['path']) == 'jquery',
                     'local' => false,
-                    'media' => $asset['media']
+                    'media' => $media
                 );
             }else{
                 //technically shouldn't happen
@@ -355,7 +374,7 @@ class Taylor{
             if($type == 'js')
                 $output .= "\twp_enqueue_script('$handle', $file, array(), ASSET_VERSION, $footer);\n";
             elseif($type == 'css')
-                $output .= "\twp_enqueue_style('$handle', $file, array(), ASSET_VERSION $meida);\n";
+                $output .= "\twp_enqueue_style('$handle', $file, array(), ASSET_VERSION $media);\n";
         }
 
         if($output){
@@ -423,7 +442,7 @@ class Taylor{
     }
 
     function find_file($path){
-        if(!$this->find_file_path)
+        if(!isset($this->find_file_path) || !$this->find_file_path)
             $this->find_file_path = Phar::running(false) . dirname(__FILE__);
 
         if(!file_exists($this->find_file_path . '/' . $path)){
