@@ -155,30 +155,123 @@ class Taylor{
     }
 
     function installation($software){
-        if(array_key_exists('wordpress', $software)){
+        if(array_key_exists('wordpress', $software))
+            $this->install_wordpress($software['wordpress']);
+        if(array_key_exists('database', $software))
+            $this->install_database($software['database']);
+        if(array_key_exists('wordpress', $software) && array_key_exists('database', $software))
+            $this->wp_db_install($software['wordpress']);
+    }
 
-            $version = 'latest';
+    function install_wordpress($wordpress){
+        $version = 'latest';
 
-            if(array_key_exists('version', $software['wordpress']))
-                $version = $software['wordpress']['version'];
+        if(array_key_exists('version', $wordpress))
+            $version = $wordpress['version'];
 
-            $directory = './';
+        $directory = './';
 
-            if(array_key_exists('directory', $software['wordpress']))
-                $directory = $software['wordpress']['directory'];
+        if(array_key_exists('directory', $wordpress))
+            $directory = $wordpress['directory'];
 
-            if($version != 'latest' && strpos($version, 'wordpress-') !== 0)
-                $version = 'wordpress-' . $version;
-            exec('wget http://wordpress.org/' . $version . '.tar.gz');
-            exec('tar xfz ' . $version . '.tar.gz');
-            exec('mkdir -p ' . $directory);
-            exec('mv wordpress/* ' . $directory);
-            exec('rm -rf ./wordpress/');
-            exec('rm -rf ' . $version . '.tar.gz');
+        if($version != 'latest' && strpos($version, 'wordpress-') !== 0)
+            $version = 'wordpress-' . $version;
+        exec('wget http://wordpress.org/' . $version . '.tar.gz');
+        exec('tar xfz ' . $version . '.tar.gz');
+        exec('mkdir -p ' . $directory);
+        exec('mv wordpress/* ' . $directory);
+        exec('rm -rf ./wordpress/');
+        exec('rm -rf ' . $version . '.tar.gz');
+        exec('cp ' . $directory . '/wp-config-sample.php ' . $directory . '/wp-config.php');
 
-            $this->wp_path = $directory;
+        $this->wp_path = $directory;
+    }
+
+    function install_database($database_args){
+        $required_params = array('host', 'username', 'password', 'database');
+        $this->check_requirements($required_params, $database_args);
+
+        extract($database_args);
+
+        if(isset($admin_user) && isset($admin_pass)){
+            $connection = new mysqli($host, $admin_user, $admin_pass);
+            if($connection->connect_error)
+                throw new Exception("Error connecting to the DB as admin user: " . $connection->connect_error, 1);
+
+            $connection->query("CREATE DATABASE IF NOT EXISTS $database");
+            if($connection->error)
+                throw new Exception("MySQL Error: " . $connection->connect_error, 1);
+
+            $connection->query("GRANT ALL PRIVILEGES ON $database.* TO '$username' IDENTIFIED BY '$password' ");
+            if($connection->error)
+                throw new Exception("MySQL Error: " . $connection->connect_error, 1);
+
+            $connection->close();
+        }else{
+            $connection = new mysqli($host, $username, $password);
+            if($connection->connect_error)
+                throw new Exception("Error connecting to the DB as WP user: " . $connection->connect_error, 1);
+
+            $connection->query("CREATE DATABASE IF NOT EXISTS $database");
+            if($connection->error)
+                throw new Exception("MySQL Error: " . $connection->connect_error, 1);
+
+            $connection->close();
         }
-        // exit;
+
+        if($this->wp_path){
+            $this->update_wp_config($database_args);
+        }
+    }
+
+    function update_wp_config($database_args){
+
+        extract($database_args);
+
+        if($this->wp_path){
+            $wp_config = $this->wp_path . '/wp-config.php';
+
+            $patterns = array(
+                '/define\\(\'DB_NAME\', \'.*\'\\);/',
+                '/define\\(\'DB_USER\', \'.*\'\\);/',
+                '/define\\(\'DB_PASSWORD\', \'.*\'\\);/',
+                '/define\\(\'DB_HOST\', \'.*\'\\);/',
+            );
+
+            $replacements = array(
+                'define(\'DB_NAME\', \'' . $database . '\');',
+                'define(\'DB_USER\', \'' . $username . '\');',
+                'define(\'DB_PASSWORD\', \'' . $password . '\');',
+                'define(\'DB_HOST\', \'' . $host . '\');',
+            );
+
+            $config = file_get_contents($wp_config);
+            $config = preg_replace($patterns, $replacements, $config);
+            file_put_contents($wp_config, $config);
+        }
+    }
+
+    function wp_db_install($wordpress){
+        $required_params = array('site_title', 'domain', 'admin_username', 'admin_email', 'admin_password');
+        $do_wp_install = false;
+        foreach($required_params as $param)
+            if(array_key_exists($param, $wordpress))
+                $do_wp_install = true;
+
+        if($do_wp_install){
+            $this->check_requirements($required_params, $wordpress);
+            extract($wordpress);
+
+            if(!isset($public))
+                $public = true;
+
+            ob_start();
+            define('WP_SITEURL', $domain);
+            require_once($this->wp_path . '/wp-admin/install.php');
+            $install = wp_install($site_title, $admin_username, $admin_email, $public, '', $admin_password);
+            ob_end_clean();
+        }
+
     }
 
     function create_post_type($args){

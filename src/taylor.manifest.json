@@ -5,7 +5,21 @@
                 "installations" : {
                     "wordpress" : {
                         "version" : "latest",
-                        "directory" : "../wp-latest"
+                        "directory" : "../wp-latest",
+                        "site_title" : "Taylor DemoM",
+                        "domain" : "http://taylortestM.local",
+                        "public" : 0,
+                        "admin_username" : "adminM",
+                        "admin_email" : "tj+M@norex.ca",
+                        "admin_password" : "passwordM"
+                    },
+                    "database" : {
+                        "host" : "localhost",
+                        "username" : "taylor_user",
+                        "password" : "taylor_pass",
+                        "database" : "taylor_db",
+                        "admin_user" : "taylor_admin",
+                        "admin_pass" : "taylor_admin"
                     }
                 },
                 "theme_dir" : "test_theme",
