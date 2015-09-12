@@ -126,9 +126,10 @@ class Taylor{
             'custom_fields', 'post_types', 'templates', 'templates/blocks',
             'templates/includes', 'templates/pages', 'templates/panels');
         foreach($directories as $directory)
-            mkdir($this->file_path($directory, 0755));
+            mkdir($this->file_path($directory), 0755);
 
-        mkdir($this->file_path('templates_c', 0777));
+        mkdir($this->file_path('templates_c'), 0777);
+        chmod($this->file_path('templates_c'), 0777);
 
         file_put_contents($this->file_path('templates_c/.gitignore'), "*\n!.gitignore");
 
@@ -152,6 +153,11 @@ class Taylor{
 
         if($args['menus'])
             $this->add_menus($args['menus'], 'js');
+
+        require_once( $this->wp_path . '/wp-load.php' );
+        require_once( $this->wp_path . '/wp-admin/includes/admin.php' );
+        require_once( $this->wp_path . '/wp-admin/includes/upgrade.php' );
+        switch_theme($this->theme_dir);
     }
 
     function installation($software){
@@ -161,6 +167,8 @@ class Taylor{
             $this->install_database($software['database']);
         if(array_key_exists('wordpress', $software) && array_key_exists('database', $software))
             $this->wp_db_install($software['wordpress']);
+        if(array_key_exists('plugins', $software))
+            $this->install_plugins($software);
     }
 
     function install_wordpress($wordpress){
@@ -178,13 +186,14 @@ class Taylor{
 
         if($version != 'latest' && strpos($version, 'wordpress-') !== 0)
             $version = 'wordpress-' . $version;
-        // exec('wget http://wordpress.org/' . $version . '.tar.gz');
-        // exec('tar xfz ' . $version . '.tar.gz');
-        // exec('mkdir -p ' . $directory);
-        // exec('mv wordpress/* ' . $directory);
-        // exec('rm -rf ./wordpress/');
-        // exec('rm -rf ' . $version . '.tar.gz');
-        // exec('cp ' . $directory . '/wp-config-sample.php ' . $directory . '/wp-config.php');
+
+        exec('wget http://wordpress.org/' . $version . '.tar.gz');
+        exec('tar xfz ' . $version . '.tar.gz');
+        exec('mkdir -p ' . $directory);
+        exec('mv wordpress/* ' . $directory);
+        exec('rm -rf ./wordpress/');
+        exec('rm -rf ' . $version . '.tar.gz');
+        exec('cp ' . $directory . '/wp-config-sample.php ' . $directory . '/wp-config.php');
 
         $this->wp_path = $directory;
     }
@@ -274,8 +283,6 @@ class Taylor{
             $config = preg_replace($patterns, $replacements, $config);
 
             file_put_contents($wp_config, $config);
-
-            exit;
         }
     }
 
@@ -299,7 +306,57 @@ class Taylor{
             $install = wp_install($site_title, $admin_username, $admin_email, $public, '', $admin_password);
             ob_end_clean();
         }
+    }
 
+    function install_plugins($software){
+        $plugins = $software['plugins'];
+        foreach($plugins as $plugin){
+            $name = $plugin['name'];
+
+            $version = 'latest';
+            if(isset($plugin['version']))
+                $version = $plugin['version'];
+
+            if($version == 'latest')
+                $url = 'https://downloads.wordpress.org/plugin/' . $name . '.zip';
+            else
+                $url = 'https://downloads.wordpress.org/plugin/' . $name . '.' . $version . '.zip';
+
+            if(isset($plugin['url']))
+                $url = $plugin['url'];
+
+            $plugin_dir = $this->wp_path . '/wp-content/plugins/';
+            $tmp_file = $plugin_dir . $name . '.zip';
+
+            $main_file = $name . '.php';
+            if(isset($plugin['main_file']))
+                $main_file = $plugin['main_file'];
+
+            exec("wget -qO- -O $tmp_file $url && unzip $tmp_file -d $plugin_dir && rm -f $tmp_file");
+
+            $this->activate_plugin($name . '/' . $main_file);
+
+        }
+    }
+
+    function activate_plugin($plugin){
+        require_once( $this->wp_path . '/wp-load.php' );
+        require_once( $this->wp_path . '/wp-admin/includes/admin.php' );
+        require_once( $this->wp_path . '/wp-admin/includes/upgrade.php' );
+
+        $current = get_option( 'active_plugins' );
+        $plugin = plugin_basename(trim($plugin));
+
+        if (!in_array($plugin, $current)){
+            $current[] = $plugin;
+            sort($current);
+            do_action('activate_plugin', trim($plugin));
+            update_option('active_plugins',$current);
+            do_action('activate_' . trim($plugin));
+            do_action('activated_plugin', trim($plugin));
+        }
+
+        return null;
     }
 
     function create_post_type($args){
