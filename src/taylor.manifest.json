@@ -6,6 +6,7 @@
                     "wordpress" : {
                         "version" : "latest",
                         "directory" : "../wp-latest",
+                        "salt" : 0,
                         "site_title" : "Taylor DemoM",
                         "domain" : "http://taylortestM.local",
                         "public" : 0,
@@ -20,7 +21,7 @@
                         "database" : "taylor_db",
                         "admin_user" : "taylor_admin",
                         "admin_pass" : "taylor_admin"
-                    }
+                    },
                 },
                 "theme_dir" : "test_theme",
                 "project_name" : "McInnes Cooper",

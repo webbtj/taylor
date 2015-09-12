@@ -166,6 +166,8 @@ class Taylor{
     function install_wordpress($wordpress){
         $version = 'latest';
 
+        $this->wordpress = $wordpress;
+
         if(array_key_exists('version', $wordpress))
             $version = $wordpress['version'];
 
@@ -176,13 +178,13 @@ class Taylor{
 
         if($version != 'latest' && strpos($version, 'wordpress-') !== 0)
             $version = 'wordpress-' . $version;
-        exec('wget http://wordpress.org/' . $version . '.tar.gz');
-        exec('tar xfz ' . $version . '.tar.gz');
-        exec('mkdir -p ' . $directory);
-        exec('mv wordpress/* ' . $directory);
-        exec('rm -rf ./wordpress/');
-        exec('rm -rf ' . $version . '.tar.gz');
-        exec('cp ' . $directory . '/wp-config-sample.php ' . $directory . '/wp-config.php');
+        // exec('wget http://wordpress.org/' . $version . '.tar.gz');
+        // exec('tar xfz ' . $version . '.tar.gz');
+        // exec('mkdir -p ' . $directory);
+        // exec('mv wordpress/* ' . $directory);
+        // exec('rm -rf ./wordpress/');
+        // exec('rm -rf ' . $version . '.tar.gz');
+        // exec('cp ' . $directory . '/wp-config-sample.php ' . $directory . '/wp-config.php');
 
         $this->wp_path = $directory;
     }
@@ -245,9 +247,35 @@ class Taylor{
                 'define(\'DB_HOST\', \'' . $host . '\');',
             );
 
+            if(isset($this->wordpress['salt']) && (bool) $this->wordpress['salt'] === false){
+
+            }else{
+                $salts = fopen('https://api.wordpress.org/secret-key/1.1/salt/', 'r');
+                if($salts){
+                    while (($line = fgets($salts)) !== false) {
+                        $replacements[] = trim($line);
+                    }
+                    fclose($salts);
+                }else{
+                    throw new Exception("Could not generate salts for WP config file.", 1);
+                }
+                
+                $patterns[] = '/define\\(\'AUTH_KEY\',\s+\'.*\'\\);/';
+                $patterns[] = '/define\\(\'SECURE_AUTH_KEY\',\s+\'.*\'\\);/';
+                $patterns[] = '/define\\(\'LOGGED_IN_KEY\',\s+\'.*\'\\);/';
+                $patterns[] = '/define\\(\'NONCE_KEY\',\s+\'.*\'\\);/';
+                $patterns[] = '/define\\(\'AUTH_SALT\',\s+\'.*\'\\);/';
+                $patterns[] = '/define\\(\'SECURE_AUTH_SALT\',\s+\'.*\'\\);/';
+                $patterns[] = '/define\\(\'LOGGED_IN_SALT\',\s+\'.*\'\\);/';
+                $patterns[] = '/define\\(\'NONCE_SALT\',\s+\'.*\'\\);/';
+            }
+
             $config = file_get_contents($wp_config);
             $config = preg_replace($patterns, $replacements, $config);
+
             file_put_contents($wp_config, $config);
+
+            exit;
         }
     }
 
