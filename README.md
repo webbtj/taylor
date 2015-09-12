@@ -12,7 +12,7 @@ Some majour updates have been rolled in recently, including:
 * Specify Plugin version (optional)
 * Create and update wp-config.php with DB credentials and salts.
 
-*Caveats*
+####Caveats####
 The biggest pitfall to all of this is increased dependencies. To take advantage of all of these features,
 you need the following software on your machine/server:
 * wget
@@ -32,6 +32,8 @@ Since a lot of things have at least been started, here is the updated roadmap. N
 * [ ] Better security, allow manifest to ommit passwords and, instead, prompt the user for them.
 * [ ] Create custom fields with ACF.
 * [ ] Update the documentation instead of just putting this Updates section at the top and leaving the rest.
+
+##ORIGINAL DOCS##
 
 ###Overview
 Taylor is a bootstrapping tool for WordPress to help aleviate some of the pains and monotony of starting a new custom WordPress theme from scratch. Taylor takes a few command line arguments (or a manifest file) and streamlines processes such as creating a new theme with skeleton files (`functions.php`, `style.css`, headers and footers, etc.), creating custom post types, creating index pages for those post types, and creating templates for post types and index pages. There is a lot more planned in Taylor's immediate future, including custom fields support, but for now, in this pre-alpha phase, we're sticking to the basics.
