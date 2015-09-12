@@ -61,10 +61,15 @@ class Taylor{
     }
 
     function set_path(){
-        if($this->path)
+        if(isset($this->path)){
             $this->path = dirname($this->path);
-        else
+        }
+        else{
             $this->path = Phar::running(false) . dirname(__FILE__);
+            if(isset($this->wp_path)){
+                $this->path .= '/' . $this->wp_path;
+            }
+        }
 
         if($this->path == '/')
             throw new Exception("Could not find WordPress theme directory", 1);
@@ -77,7 +82,7 @@ class Taylor{
     }
 
     function get_path(){
-        if(!$this->path)
+        if(!isset($this->path) || !$this->path)
             $this->set_path();
         return $this->path;
     }
@@ -96,7 +101,8 @@ class Taylor{
         $output = $this->file_get_contents($from);
         if(!empty($params)){
             foreach($params as $param => $value){
-                $output = str_replace("[[$param]]", $value, $output);
+                if(is_string($value))
+                    $output = str_replace("[[$param]]", $value, $output);
             }
         }
         $filename = $this->file_path($to);
@@ -104,6 +110,9 @@ class Taylor{
     }
 
     function init($args){
+        if($args['installations']){
+            $this->installation($args['installations']);
+        }
         $required_params = array('theme_dir', 'project_name');
         $this->check_requirements($required_params, $args);
         $this->set_constants($args);
@@ -117,9 +126,10 @@ class Taylor{
             'custom_fields', 'post_types', 'templates', 'templates/blocks',
             'templates/includes', 'templates/pages', 'templates/panels');
         foreach($directories as $directory)
-            mkdir($this->file_path($directory, 0755));
+            mkdir($this->file_path($directory), 0755);
 
-        mkdir($this->file_path('templates_c', 0777));
+        mkdir($this->file_path('templates_c'), 0777);
+        chmod($this->file_path('templates_c'), 0777);
 
         file_put_contents($this->file_path('templates_c/.gitignore'), "*\n!.gitignore");
 
@@ -143,6 +153,210 @@ class Taylor{
 
         if($args['menus'])
             $this->add_menus($args['menus'], 'js');
+
+        require_once( $this->wp_path . '/wp-load.php' );
+        require_once( $this->wp_path . '/wp-admin/includes/admin.php' );
+        require_once( $this->wp_path . '/wp-admin/includes/upgrade.php' );
+        switch_theme($this->theme_dir);
+    }
+
+    function installation($software){
+        if(array_key_exists('wordpress', $software))
+            $this->install_wordpress($software['wordpress']);
+        if(array_key_exists('database', $software))
+            $this->install_database($software['database']);
+        if(array_key_exists('wordpress', $software) && array_key_exists('database', $software))
+            $this->wp_db_install($software['wordpress']);
+        if(array_key_exists('plugins', $software))
+            $this->install_plugins($software);
+    }
+
+    function install_wordpress($wordpress){
+        $version = 'latest';
+
+        $this->wordpress = $wordpress;
+
+        if(array_key_exists('version', $wordpress))
+            $version = $wordpress['version'];
+
+        $directory = './';
+
+        if(array_key_exists('directory', $wordpress))
+            $directory = $wordpress['directory'];
+
+        if($version != 'latest' && strpos($version, 'wordpress-') !== 0)
+            $version = 'wordpress-' . $version;
+
+        exec('wget http://wordpress.org/' . $version . '.tar.gz');
+        exec('tar xfz ' . $version . '.tar.gz');
+        exec('mkdir -p ' . $directory);
+        exec('mv wordpress/* ' . $directory);
+        exec('rm -rf ./wordpress/');
+        exec('rm -rf ' . $version . '.tar.gz');
+        exec('cp ' . $directory . '/wp-config-sample.php ' . $directory . '/wp-config.php');
+
+        $this->wp_path = $directory;
+    }
+
+    function install_database($database_args){
+        $required_params = array('host', 'username', 'password', 'database');
+        $this->check_requirements($required_params, $database_args);
+
+        extract($database_args);
+
+        if(isset($admin_user) && isset($admin_pass)){
+            $connection = new mysqli($host, $admin_user, $admin_pass);
+            if($connection->connect_error)
+                throw new Exception("Error connecting to the DB as admin user: " . $connection->connect_error, 1);
+
+            $connection->query("CREATE DATABASE IF NOT EXISTS $database");
+            if($connection->error)
+                throw new Exception("MySQL Error: " . $connection->connect_error, 1);
+
+            $connection->query("GRANT ALL PRIVILEGES ON $database.* TO '$username' IDENTIFIED BY '$password' ");
+            if($connection->error)
+                throw new Exception("MySQL Error: " . $connection->connect_error, 1);
+
+            $connection->close();
+        }else{
+            $connection = new mysqli($host, $username, $password);
+            if($connection->connect_error)
+                throw new Exception("Error connecting to the DB as WP user: " . $connection->connect_error, 1);
+
+            $connection->query("CREATE DATABASE IF NOT EXISTS $database");
+            if($connection->error)
+                throw new Exception("MySQL Error: " . $connection->connect_error, 1);
+
+            $connection->close();
+        }
+
+        if($this->wp_path){
+            $this->update_wp_config($database_args);
+        }
+    }
+
+    function update_wp_config($database_args){
+
+        extract($database_args);
+
+        if($this->wp_path){
+            $wp_config = $this->wp_path . '/wp-config.php';
+
+            $patterns = array(
+                '/define\\(\'DB_NAME\', \'.*\'\\);/',
+                '/define\\(\'DB_USER\', \'.*\'\\);/',
+                '/define\\(\'DB_PASSWORD\', \'.*\'\\);/',
+                '/define\\(\'DB_HOST\', \'.*\'\\);/',
+            );
+
+            $replacements = array(
+                'define(\'DB_NAME\', \'' . $database . '\');',
+                'define(\'DB_USER\', \'' . $username . '\');',
+                'define(\'DB_PASSWORD\', \'' . $password . '\');',
+                'define(\'DB_HOST\', \'' . $host . '\');',
+            );
+
+            if(isset($this->wordpress['salt']) && (bool) $this->wordpress['salt'] === false){
+
+            }else{
+                $salts = fopen('https://api.wordpress.org/secret-key/1.1/salt/', 'r');
+                if($salts){
+                    while (($line = fgets($salts)) !== false) {
+                        $replacements[] = trim($line);
+                    }
+                    fclose($salts);
+                }else{
+                    throw new Exception("Could not generate salts for WP config file.", 1);
+                }
+                
+                $patterns[] = '/define\\(\'AUTH_KEY\',\s+\'.*\'\\);/';
+                $patterns[] = '/define\\(\'SECURE_AUTH_KEY\',\s+\'.*\'\\);/';
+                $patterns[] = '/define\\(\'LOGGED_IN_KEY\',\s+\'.*\'\\);/';
+                $patterns[] = '/define\\(\'NONCE_KEY\',\s+\'.*\'\\);/';
+                $patterns[] = '/define\\(\'AUTH_SALT\',\s+\'.*\'\\);/';
+                $patterns[] = '/define\\(\'SECURE_AUTH_SALT\',\s+\'.*\'\\);/';
+                $patterns[] = '/define\\(\'LOGGED_IN_SALT\',\s+\'.*\'\\);/';
+                $patterns[] = '/define\\(\'NONCE_SALT\',\s+\'.*\'\\);/';
+            }
+
+            $config = file_get_contents($wp_config);
+            $config = preg_replace($patterns, $replacements, $config);
+
+            file_put_contents($wp_config, $config);
+        }
+    }
+
+    function wp_db_install($wordpress){
+        $required_params = array('site_title', 'domain', 'admin_username', 'admin_email', 'admin_password');
+        $do_wp_install = false;
+        foreach($required_params as $param)
+            if(array_key_exists($param, $wordpress))
+                $do_wp_install = true;
+
+        if($do_wp_install){
+            $this->check_requirements($required_params, $wordpress);
+            extract($wordpress);
+
+            if(!isset($public))
+                $public = true;
+
+            ob_start();
+            define('WP_SITEURL', $domain);
+            require_once($this->wp_path . '/wp-admin/install.php');
+            $install = wp_install($site_title, $admin_username, $admin_email, $public, '', $admin_password);
+            ob_end_clean();
+        }
+    }
+
+    function install_plugins($software){
+        $plugins = $software['plugins'];
+        foreach($plugins as $plugin){
+            $name = $plugin['name'];
+
+            $version = 'latest';
+            if(isset($plugin['version']))
+                $version = $plugin['version'];
+
+            if($version == 'latest')
+                $url = 'https://downloads.wordpress.org/plugin/' . $name . '.zip';
+            else
+                $url = 'https://downloads.wordpress.org/plugin/' . $name . '.' . $version . '.zip';
+
+            if(isset($plugin['url']))
+                $url = $plugin['url'];
+
+            $plugin_dir = $this->wp_path . '/wp-content/plugins/';
+            $tmp_file = $plugin_dir . $name . '.zip';
+
+            $main_file = $name . '.php';
+            if(isset($plugin['main_file']))
+                $main_file = $plugin['main_file'];
+
+            exec("wget -qO- -O $tmp_file $url && unzip $tmp_file -d $plugin_dir && rm -f $tmp_file");
+
+            $this->activate_plugin($name . '/' . $main_file);
+
+        }
+    }
+
+    function activate_plugin($plugin){
+        require_once( $this->wp_path . '/wp-load.php' );
+        require_once( $this->wp_path . '/wp-admin/includes/admin.php' );
+        require_once( $this->wp_path . '/wp-admin/includes/upgrade.php' );
+
+        $current = get_option( 'active_plugins' );
+        $plugin = plugin_basename(trim($plugin));
+
+        if (!in_array($plugin, $current)){
+            $current[] = $plugin;
+            sort($current);
+            do_action('activate_plugin', trim($plugin));
+            update_option('active_plugins',$current);
+            do_action('activate_' . trim($plugin));
+            do_action('activated_plugin', trim($plugin));
+        }
+
+        return null;
     }
 
     function create_post_type($args){
@@ -189,7 +403,7 @@ class Taylor{
     function create_templates($args){
         $required_params = array('type', 'index_name');
 
-        if(!$args['index_name'] && $args['plural'])
+        if(!isset($args['index_name']) && $args['plural'])
             $args['index_name'] = $args['plural'];
 
         $this->check_requirements($required_params, $args);
@@ -235,6 +449,10 @@ class Taylor{
             else
                 $is_url = false;
 
+            $media = null;
+            if(isset($asset['media']))
+                $media = $asset['media'];
+
             $is_copy = true;
             if(isset($asset['copy']) && $asset['copy'] == false)
                 $is_copy = false;
@@ -245,7 +463,14 @@ class Taylor{
 
             if($is_copy && $is_url){
                 //copy from remote url
-                $contents = file_get_contents($asset['path']);
+                $context=array(
+                    "ssl"=>array(
+                        "verify_peer"=>false,
+                        "verify_peer_name"=>false,
+                    ),
+                );
+
+                $contents = file_get_contents($asset['path'], false, stream_context_create($context));
                 $path = $this->get_path();
                 if($asset['asset_path'])
                     $path .= '/' . $asset['asset_path'];
@@ -256,11 +481,11 @@ class Taylor{
 
                 $includes[] = array(
                     'file' => str_replace($this->get_path(), '', $path),
-                    'footer' => (bool) $asset['footer'],
+                    'footer' => (bool) isset($asset['footer']),
                     'handle' => $this->asset_handle($path),
                     'reset_jquery' => $this->asset_handle($path) == 'jquery',
                     'local' => true,
-                    'media' => $asset['media']
+                    'media' => $media
                 );
             }elseif($is_copy){
                 //copy from local file system
@@ -290,7 +515,7 @@ class Taylor{
                         'handle' => $this->asset_handle($destination),
                         'reset_jquery' => $this->asset_handle($destination) == 'jquery',
                         'local' => true,
-                        'media' => $asset['media']
+                        'media' => $media
                     );
                 }
 
@@ -302,7 +527,7 @@ class Taylor{
                     'handle' => $this->asset_handle($asset['path']),
                     'reset_jquery' => $this->asset_handle($asset['path']) == 'jquery',
                     'local' => false,
-                    'media' => $asset['media']
+                    'media' => $media
                 );
             }else{
                 //technically shouldn't happen
@@ -327,7 +552,7 @@ class Taylor{
             if($type == 'js')
                 $output .= "\twp_enqueue_script('$handle', $file, array(), ASSET_VERSION, $footer);\n";
             elseif($type == 'css')
-                $output .= "\twp_enqueue_style('$handle', $file, array(), ASSET_VERSION $meida);\n";
+                $output .= "\twp_enqueue_style('$handle', $file, array(), ASSET_VERSION $media);\n";
         }
 
         if($output){
@@ -395,7 +620,7 @@ class Taylor{
     }
 
     function find_file($path){
-        if(!$this->find_file_path)
+        if(!isset($this->find_file_path) || !$this->find_file_path)
             $this->find_file_path = Phar::running(false) . dirname(__FILE__);
 
         if(!file_exists($this->find_file_path . '/' . $path)){

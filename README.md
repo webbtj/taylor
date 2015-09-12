@@ -1,5 +1,38 @@
 #Taylor
 
+##UPDATES!##
+####September 12, 2015####
+Some majour updates have been rolled in recently, including:
+* Download WordPress (with the option of specifying a specific version)!
+* Custom Theme is automatically activated
+* Create DB User and DB if necessary
+* Install and Activate WordPress!
+* Automatically Download, Install and Activate Plugins!
+* Plugins downlaod from the Codex, provide an optional url param to install from anywhere
+* Specify Plugin version (optional)
+* Create and update wp-config.php with DB credentials and salts.
+
+*Caveats*
+The biggest pitfall to all of this is increased dependencies. To take advantage of all of these features,
+you need the following software on your machine/server:
+* wget
+* zip
+* tar
+We're now also using a lot of unix based commands (as evident by the above list), so Windows will not be supported.
+
+###New RoadMap###
+Since a lot of things have at least been started, here is the updated roadmap. Note that a lot of this is "housekeeping" and opposed to developing cool new features.
+* [ ] TESTING! A lot of new functionality has been added, and has not been thoroughly tested.
+* [ ] Better exception and error handling. Right now most failures will throw exceptions, some may not need to throw exceptions but rather just inform the user (couldn't find a plugin, things like that).
+* [ ] Refactoring! The code isn't a complete mess, yet, but it's on it's way.
+* [ ] Automated content generation: when defining content types, let's create some sample content (optionally).
+* [ ] Menu generation, should probably tie into the previous item somehow.
+* [ ] Define assests (js/css) with location (header/footer) in manifest (built, needs more testing).
+* [ ] While keeping the manifest file, let's drop the need to specify it when running the application, in other words, completely ditch the whole idea of passing different arguments to the application
+* [ ] Better security, allow manifest to ommit passwords and, instead, prompt the user for them.
+* [ ] Create custom fields with ACF.
+* [ ] Update the documentation instead of just putting this Updates section at the top and leaving the rest.
+
 ###Overview
 Taylor is a bootstrapping tool for WordPress to help aleviate some of the pains and monotony of starting a new custom WordPress theme from scratch. Taylor takes a few command line arguments (or a manifest file) and streamlines processes such as creating a new theme with skeleton files (`functions.php`, `style.css`, headers and footers, etc.), creating custom post types, creating index pages for those post types, and creating templates for post types and index pages. There is a lot more planned in Taylor's immediate future, including custom fields support, but for now, in this pre-alpha phase, we're sticking to the basics.
 

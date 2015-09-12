@@ -2,21 +2,46 @@
     "commands" : [
         {
             "init" : {
-                "theme_dir" : "test_theme",
-                "project_name" : "McInnes Cooper",
-                "project_uri" : "http://mcinnescooper.com",
-                "author_name" : "norex",
+                "installations" : {
+                    "wordpress" : {
+                        "version" : "latest",
+                        "directory" : "../wp-latest",
+                        "salt" : 0,
+                        "site_title" : "Taylor DemoM",
+                        "domain" : "http://taylor.local",
+                        "public" : 0,
+                        "admin_username" : "admin",
+                        "admin_email" : "tj@norex.ca",
+                        "admin_password" : "password"
+                    },
+                    "database" : {
+                        "host" : "localhost",
+                        "username" : "taylor_user",
+                        "password" : "taylor_pass",
+                        "database" : "taylor_db",
+                        "admin_user" : "taylor_admin",
+                        "admin_pass" : "taylor_admin"
+                    },
+                    "plugins" : [
+                        {
+                            "name" : "squirrly-seo",
+                            "version" : "3.4.4",
+                            "main_file" : "squirrly.php"
+                        },
+                        {
+                            "name" : "zedity"
+                        },
+                        {
+                            "name" : "smarty-for-wordpress"
+                        }
+                    ]
+                },
+                "theme_dir" : "demo_theme",
+                "project_name" : "Taylor Demo Theme",
+                "project_uri" : "http://webb.tj",
+                "author_name" : "tj",
                 "author_uri" : "http://sitebynorex.com",
                 "javascripts" : [
-                    {
-                        "path" : "mockup/js/main.js",
-                        "asset_path" : "js"
-                    },
-                    {
-                        "path" : "mockup/js/plugins.js",
-                        "drop_root" : 1,
-                        "footer" : 1
-                    },
                     {
                         "path" : "https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js",
                         "asset_path" : "js"
@@ -28,10 +53,6 @@
                     }
                 ],
                 "styles" : [
-                    {
-                        "path" : "mockup/bower_components/normalize.css/normalize.css",
-                        "asset_path" : "css"
-                    },
                     {
                         "path" : "http://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0-rc.2/css/select2.min.css",
                         "copy" : 1,
