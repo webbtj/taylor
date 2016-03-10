@@ -1,14 +1,16 @@
 <?php
 
-parse_str(implode('&', array_slice($argv, 1)), $args);
+// parse_str(implode('&', array_slice($argv, 1)), $args);
 
-$t = new Taylor($args);
+// $t = new Taylor($args);
+$t = new Taylor();
 
 class Taylor{
-    function __construct($args){
-        $function = key($args);
-        array_shift($args);
-        $this->do_function($function, $args);
+    function __construct($args = null){
+        // $function = key($args);
+        // array_shift($args);
+        // $this->do_function($function, $args);
+        $this->manifest();
     }
 
     function file_get_contents($path){
@@ -65,7 +67,12 @@ class Taylor{
             $this->path = dirname($this->path);
         }
         else{
-            $this->path = Phar::running(false) . dirname(__FILE__);
+            $phar_running = Phar::running(false);
+            if($phar_running)
+                $this->path = $phar_running;
+            else
+                $this->path = dirname(__FILE__);
+            
             if(isset($this->wp_path)){
                 $this->path .= '/' . $this->wp_path;
             }
