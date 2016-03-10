@@ -497,7 +497,8 @@ class Taylor{
                     $destination = $asset['path'];
                     if($asset['drop_root']){
                         $parts = explode('/', $destination);
-                        array_shift($parts);
+                        for($i = 0; $i < (int)$asset['drop_root']; $i++)
+                            array_shift($parts);
                         $destination = implode('/', $parts);
                     }
                     if($asset['asset_path'])
