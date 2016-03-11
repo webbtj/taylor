@@ -1,6 +1,6 @@
 <?php
 /*
- * Template Name: Homepage
+ * Template Name: Standard Subpage
  */
 
 global $post;
@@ -11,6 +11,6 @@ $smarty->assign('content', apply_filters('the_content', $post->post_content));
 
 get_header();
 
-$smarty->display('pages/page-home.tpl');
+$smarty->display('pages/page.tpl');
 
 get_footer();

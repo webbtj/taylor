@@ -31,6 +31,8 @@
     <meta name="msapplication-TileColor" content="#ffffff">
     <meta name="msapplication-TileImage" content="/mstile-144x144.png">
 
+    <?php wp_head(); ?>
+
   </head>
     <body <?php body_class(); ?>>
 

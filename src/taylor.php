@@ -69,10 +69,10 @@ class Taylor{
         else{
             $phar_running = Phar::running(false);
             if($phar_running)
-                $this->path = $phar_running;
+                $this->path = dirname($phar_running);
             else
                 $this->path = dirname(__FILE__);
-            
+
             if(isset($this->wp_path)){
                 $this->path .= '/' . $this->wp_path;
             }
@@ -145,12 +145,18 @@ class Taylor{
         $this->copy_file('includes/init/header.php', 'header.php', $args);
         $this->copy_file('includes/init/home.php', 'home.php');
         $this->copy_file('includes/init/index.php', 'index.php');
+        $this->copy_file('includes/init/page.php', 'page.php');
+        $this->copy_file('includes/init/single.php', 'single.php');
         $this->copy_file('includes/init/page-home.php', 'page-home.php');
+        $this->copy_file('includes/init/404.php', '404.php');
         $this->copy_file('includes/init/style.css', 'style.css', $args);
 
         $this->copy_file('includes/init/header.tpl', 'templates/includes/header.tpl');
         $this->copy_file('includes/init/footer.tpl', 'templates/includes/footer.tpl');
         $this->copy_file('includes/init/page-home.tpl', 'templates/pages/page-home.tpl');
+        $this->copy_file('includes/init/page.tpl', 'templates/pages/page.tpl');
+        $this->copy_file('includes/init/404.tpl', 'templates/pages/404.tpl');
+        $this->copy_file('includes/init/single.tpl', 'templates/pages/single.tpl');
 
         if($args['styles'])
             $this->add_assets($args['styles'], 'css');
