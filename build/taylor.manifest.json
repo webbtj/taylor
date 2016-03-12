@@ -2,41 +2,131 @@
     "commands" : [
         {
             "init" : {
-                "theme_dir" : "test_theme",
-                "project_name" : "McInnes Cooper",
-                "project_uri" : "http://mcinnescooper.com",
+                "installations" : {
+                    "wordpress" : {
+                        "version" : "latest",
+                        "directory" : "../../wp",
+                        "salt" : 0,
+                        "site_title" : "MDW Law",
+                        "domain" : "http://www.mdwlaw.ca",
+                        "public" : 0,
+                        "admin_username" : "admin",
+                        "admin_email" : "developers@norex.ca",
+                        "admin_password" : "norex"
+                    },
+                    "database" : {
+                        "host" : "localhost",
+                        "username" : "norex_mdwTT",
+                        "password" : "6ARmDlm1biI!IL3d",
+                        "database" : "norex_mdwTT",
+                        "admin_user" : "taylor_admin",
+                        "admin_pass" : "taylor_admin"
+                    },
+                    "plugins" : [
+                        {
+                            "name" : "custom-image-sizes"
+                        },
+                        {
+                            "name" : "advanced-custom-fields"
+                        },
+                        {
+                            "name" : "smarty-for-wordpress"
+                        },
+                        {
+                            "name" : "posts-to-posts"
+                        },
+                        {
+                            "name" : "tinymce-advanced"
+                        },
+                        {
+                            "name" : "acf-field-date-time-picker"
+                        }
+                    ]
+                },
+                "theme_dir" : "mdwlaw",
+                "project_name" : "MDW Law",
+                "project_uri" : "http://mdwlaw.ca",
                 "author_name" : "norex",
                 "author_uri" : "http://sitebynorex.com",
                 "javascripts" : [
                     {
-                        "path" : "mockup/js/main.js",
-                        "asset_path" : "js"
+                        "path" : "../../clone/assets/bower_components/jQuery/dist/jquery.min.js",
+                        "asset_path" : "js",
+                        "drop_root" : 2
                     },
                     {
-                        "path" : "mockup/js/plugins.js",
-                        "drop_root" : 1,
+                        "path" : "../../clone/assets/bower_components/modernizr/modernizr.js",
+                        "asset_path" : "js",
+                        "drop_root" : 2
+                    },
+                    {
+                        "path" : "../../clone/assets/bower_components/matchMedia/matchMedia.js",
+                        "asset_path" : "js",
+                        "drop_root" : 2,
                         "footer" : 1
                     },
                     {
-                        "path" : "https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js",
-                        "asset_path" : "js"
+                        "path" : "../../clone/assets/bower_components/OwlCarousel/owl-carousel/owl.carousel.min.js",
+                        "asset_path" : "js",
+                        "drop_root" : 2,
+                        "footer" : 1
                     },
                     {
-                        "path" : "//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0-rc.2/js/select2.min.js",
-                        "copy" : 0,
+                        "path" : "../../clone/assets/bower_components/viewport-units-buggyfill/viewport-units-buggyfill.js",
+                        "asset_path" : "js",
+                        "drop_root" : 2,
+                        "footer" : 1
+                    },
+                    {
+                        "path" : "../../clone/assets/bower_components/viewport-units-buggyfill/viewport-units-buggyfill.hacks.js",
+                        "asset_path" : "js",
+                        "drop_root" : 2,
+                        "footer" : 1
+                    },
+                    {
+                        "path" : "../../clone/assets/js/app.js",
+                        "asset_path" : "js",
+                        "drop_root" : 2,
                         "footer" : 1
                     }
                 ],
                 "styles" : [
                     {
-                        "path" : "mockup/bower_components/normalize.css/normalize.css",
-                        "asset_path" : "css"
+                        "path" : "../../clone/assets/bower_components/fontawesome/css/font-awesome.min.css",
+                        "asset_path" : "css",
+                        "drop_root" : 2
                     },
                     {
-                        "path" : "http://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0-rc.2/css/select2.min.css",
-                        "copy" : 1,
-                        "asset_path" : "css"
+                        "path" : "../../clone/assets/bower_components/ionicons/css/ionicons.min.css",
+                        "asset_path" : "css",
+                        "drop_root" : 2
+                    },
+                    {
+                        "path" : "../../clone/assets/bower_components/normalize.css/normalize.css",
+                        "asset_path" : "css",
+                        "drop_root" : 2
+                    },
+                    {
+                        "path" : "../../clone/assets/bower_components/OwlCarousel/owl-carousel/owl.carousel.css",
+                        "asset_path" : "css",
+                        "drop_root" : 2
+                    },
+                    {
+                        "path" : "../../clone/assets/bower_components/OwlCarousel/owl-carousel/owl.theme.css",
+                        "asset_path" : "css",
+                        "drop_root" : 2
+                    },
+                    {
+                        "path" : "../../clone/assets/bower_components/OwlCarousel/owl-carousel/owl.transitions.css",
+                        "asset_path" : "css",
+                        "drop_root" : 2
+                    },
+                    {
+                        "path" : "../../clone/assets/css/landing.css",
+                        "asset_path" : "css",
+                        "drop_root" : 2
                     }
+                    
                 ],
                 "menus" : [
                     {
@@ -54,101 +144,30 @@
         },
         {
             "create_post_type" : {
-                "type" : "mc_event",
-                "plural" : "Events",
-                "singular" : "Event",
-                "slug" : "events",
-                "templates" : 1
-            }
-        },
-        {
-            "create_post_type" : {
-                "type" : "mc_news",
-                "plural" : "News",
-                "singular" : "News",
-                "slug" : "news",
-                "templates" : 1
-            }
-        },
-        {
-            "create_post_type" : {
-                "type" : "mc_update",
-                "plural" : "Legal Updates",
-                "singular" : "Legal Update",
-                "slug" : "updates",
-                "templates" : 1
-            }
-        },
-        {
-            "create_post_type" : {
-                "type" : "mc_alert",
-                "plural" : "Legal Alerts",
-                "singular" : "Legal Alert",
-                "slug" : "alerts",
-                "templates" : 1
-            }
-        },
-        {
-            "create_post_type" : {
-                "type" : "mc_publication",
-                "plural" : "Publications",
-                "singular" : "Publication",
-                "slug" : "publications",
-                "templates" : 1
-            }
-        },
-        {
-            "create_post_type" : {
-                "type" : "mc_person",
-                "plural" : "People",
-                "singular" : "Person",
-                "slug" : "people",
-                "templates" : 1
-            }
-        },
-        {
-            "create_post_type" : {
-                "type" : "mc_work",
-                "plural" : "Representative Works",
-                "singular" : "Representative Work",
-                "slug" : "works",
-                "templates" : 1
-            }
-        },
-        {
-            "create_post_type" : {
-                "type" : "mc_service",
-                "plural" : "Services",
-                "singular" : "Service",
+                "type" : "mdw_service",
+                "plural" : "Service",
+                "singular" : "Services",
                 "slug" : "services",
+                "templates" : 1,
+                "hierarchical" : 1
+            }
+        },
+        {
+            "create_post_type" : {
+                "type" : "mdw_lawyer",
+                "plural" : "Lawyers",
+                "singular" : "Lawyer",
+                "slug" : "lawyers",
                 "templates" : 1
             }
         },
         {
             "create_post_type" : {
-                "type" : "mc_industry",
-                "plural" : "Industries",
-                "singular" : "Industry",
-                "slug" : "industries",
+                "type" : "mdw_life_event",
+                "plural" : "Life Events",
+                "singular" : "Life Event",
+                "slug" : "life-events",
                 "templates" : 1
-            }
-        },
-        {
-            "create_taxonomy" : {
-                "taxonomy" : "news_category",
-                "type" : "mc_news",
-                "singular" : "Category",
-                "plural" : "Categories",
-                "hierarchical" : 1
-            }
-        },
-        {
-            "create_taxonomy" : {
-                "taxonomy" : "event_category",
-                "type" : "mc_event",
-                "singular" : "Category",
-                "plural" : "Categories",
-                "hierarchical" : 1
             }
         }
     ]
