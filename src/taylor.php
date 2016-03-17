@@ -136,6 +136,78 @@ class Taylor{
             $this->create_templates($args);
     }
 
+    function post_to_post($args){
+        $required_params = array('from', 'to');
+        Validate($required_params, $args);
+
+        extract($args);
+
+        if(!File::exists(WordPress::path('includes/')))
+            mkdir(WordPress::path('includes/'), 0755, true);
+
+        $filename = WordPress::path('includes/posts-to-posts.php');
+        if(!File::exists($filename)){
+            $output = File::read('includes/posts-to-posts.php');
+            File::init($filename);
+            File::append($filename, $output);
+            File::append(WordPress::path('functions.php'), "\nrequire_once('includes/posts-to-posts.php');\n");
+        }
+
+        $output = File::read('includes/post-to-post.php');
+        foreach($required_params as $param){
+            $output = str_replace("[[$param]]", $$param, $output);
+        }
+        $p2p_file = File::read($filename, true);
+        $p2p_file = str_replace('//P2P Connections', $output, $p2p_file);
+        File::write($filename, $p2p_file);
+
+        //
+        $output = File::read('includes/related-post.php');
+        foreach($required_params as $param){
+            $output = str_replace("[[$param]]", $$param, $output);
+        }
+        $from_output = str_replace('[[opposite]]', $to, $output);
+        $to_output = str_replace('[[opposite]]', $from, $output);
+
+        $single_from = 'single-' . $from;
+        $single_to = 'single-' . $to;
+        if($from == 'post')
+            $single_from = 'single';
+        if($to == 'post')
+            $single_to = 'single';
+
+        $from_posttype = File::read(WordPress::path($single_from . '.php'), true);
+        $from_output = str_replace('get_header();', "get_header();\n" . $from_output, $from_posttype);
+        File::write(WordPress::path($single_from . '.php'), $from_output);
+
+        $to_posttype = File::read(WordPress::path($single_to . '.php'), true);
+        $to_output = str_replace('get_header();', "get_header();\n" . $to_output, $to_posttype);
+        File::write(WordPress::path($single_to . '.php'), $to_output);
+
+        //
+        $output = File::read('includes/related-post.tpl');
+        foreach($required_params as $param){
+            $output = str_replace("[[$param]]", $$param, $output);
+        }
+        $from_output = str_replace('[[opposite]]', $to, $output);
+        $to_output = str_replace('[[opposite]]', $from, $output);
+
+        $single_from = 'single-' . $from;
+        $single_to = 'single-' . $to;
+        if($from == 'post')
+            $single_from = 'single';
+        if($to == 'post')
+            $single_to = 'single';
+
+        $from_template = File::read(WordPress::path('templates/pages/' . $single_from . '.tpl'), true);
+        $from_output = str_replace('{$content}', "{\$content}\n" . $from_output, $from_template);
+        File::write(WordPress::path('templates/pages/' . $single_from . '.tpl'), $from_output);
+
+        $to_template = File::read(WordPress::path('templates/pages/' . $single_to . '.tpl'), true);
+        $to_output = str_replace('{$content}', "{\$content}\n" . $to_output, $to_template);
+        File::write(WordPress::path('templates/pages/' . $single_to . '.tpl'), $to_output);
+    }
+
     function create_taxonomy($args){
         $required_params = array('type', 'plural', 'singular', 'taxonomy', 'hierarchical');
         Validate($required_params, $args);
