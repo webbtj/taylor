@@ -1,0 +1,177 @@
+{
+    "commands" : [
+        {
+            "init" : {
+                "installations" : {
+                    "wordpress" : {
+                        "version" : "latest",
+                        "directory" : "../../wp",
+                        "salt" : 1,
+                        "site_title" : "Taylor Demo",
+                        "domain" : "http://www.taylor.demo",
+                        "public" : 0,
+                        "admin_username" : "taylor",
+                        "admin_email" : "taylor@taylor.demo",
+                        "admin_password" : "taylor"
+                    },
+                    "database" : {
+                        "host" : "localhost",
+                        "username" : "taylor_demo_db",
+                        "password" : "taylor_demo_db",
+                        "database" : "taylor_demo_db",
+                        "admin_user" : "taylor_admin",
+                        "admin_pass" : "taylor_admin"
+                    },
+                    "plugins" : [
+                        {
+                            "name" : "custom-image-sizes",
+                            "main_file" : "filosofo-custom-image-sizes.php"
+                        },
+                        {
+                            "name" : "advanced-custom-fields",
+                            "main_file" : "acf.php"
+                        },
+                        {
+                            "name" : "smarty-for-wordpress"
+                        },
+                        {
+                            "name" : "posts-to-posts"
+                        },
+                        {
+                            "name" : "tinymce-advanced"
+                        },
+                        {
+                            "name" : "acf-field-date-time-picker",
+                            "main_file" : "acf-date_time_picker.php"
+                        }
+                    ]
+                },
+                "theme_dir" : "taylor_demo",
+                "project_name" : "Taylor Demo",
+                "project_uri" : "http://taylor.demo",
+                "author_name" : "TJ Webb",
+                "author_uri" : "http://webb.tj",
+                "javascripts" : [
+                    {
+                        "path" : "../../clone/assets/bower_components/jQuery/dist/jquery.min.js",
+                        "asset_path" : "js",
+                        "drop_root" : 2
+                    },
+                    {
+                        "path" : "../../clone/assets/bower_components/modernizr/modernizr.js",
+                        "asset_path" : "js",
+                        "drop_root" : 2
+                    },
+                    {
+                        "path" : "../../clone/assets/bower_components/matchMedia/matchMedia.js",
+                        "asset_path" : "js",
+                        "drop_root" : 2,
+                        "footer" : 1
+                    },
+                    {
+                        "path" : "../../clone/assets/bower_components/OwlCarousel/owl-carousel/owl.carousel.min.js",
+                        "asset_path" : "js",
+                        "drop_root" : 2,
+                        "footer" : 1
+                    },
+                    {
+                        "path" : "../../clone/assets/bower_components/viewport-units-buggyfill/viewport-units-buggyfill.js",
+                        "asset_path" : "js",
+                        "drop_root" : 2,
+                        "footer" : 1
+                    },
+                    {
+                        "path" : "../../clone/assets/bower_components/viewport-units-buggyfill/viewport-units-buggyfill.hacks.js",
+                        "asset_path" : "js",
+                        "drop_root" : 2,
+                        "footer" : 1
+                    },
+                    {
+                        "path" : "../../clone/assets/js/app.js",
+                        "asset_path" : "js",
+                        "drop_root" : 2,
+                        "footer" : 1
+                    }
+                ],
+                "styles" : [
+                    {
+                        "path" : "../../clone/assets/bower_components/fontawesome/css/font-awesome.min.css",
+                        "asset_path" : "css",
+                        "drop_root" : 2
+                    },
+                    {
+                        "path" : "../../clone/assets/bower_components/ionicons/css/ionicons.min.css",
+                        "asset_path" : "css",
+                        "drop_root" : 2
+                    },
+                    {
+                        "path" : "../../clone/assets/bower_components/normalize.css/normalize.css",
+                        "asset_path" : "css",
+                        "drop_root" : 2
+                    },
+                    {
+                        "path" : "../../clone/assets/bower_components/OwlCarousel/owl-carousel/owl.carousel.css",
+                        "asset_path" : "css",
+                        "drop_root" : 2
+                    },
+                    {
+                        "path" : "../../clone/assets/bower_components/OwlCarousel/owl-carousel/owl.theme.css",
+                        "asset_path" : "css",
+                        "drop_root" : 2
+                    },
+                    {
+                        "path" : "../../clone/assets/bower_components/OwlCarousel/owl-carousel/owl.transitions.css",
+                        "asset_path" : "css",
+                        "drop_root" : 2
+                    },
+                    {
+                        "path" : "../../clone/assets/css/landing.css",
+                        "asset_path" : "css",
+                        "drop_root" : 2
+                    }
+                    
+                ],
+                "menus" : [
+                    {
+                        "primary" : {
+                            "container" : 0,
+                            "class" : "primary-menu-class",
+                            "name" : "Main Menu"
+                        }
+                    },
+                    {
+                        "footer_menu" : {}
+                    }
+                ]
+            }
+        },
+        {
+            "create_post_type" : {
+                "type" : "mdw_service",
+                "plural" : "Service",
+                "singular" : "Services",
+                "slug" : "services",
+                "templates" : 1,
+                "hierarchical" : 1
+            }
+        },
+        {
+            "create_post_type" : {
+                "type" : "mdw_lawyer",
+                "plural" : "Lawyers",
+                "singular" : "Lawyer",
+                "slug" : "lawyers",
+                "templates" : 1
+            }
+        },
+        {
+            "create_post_type" : {
+                "type" : "mdw_life_event",
+                "plural" : "Life Events",
+                "singular" : "Life Event",
+                "slug" : "life-events",
+                "templates" : 1
+            }
+        }
+    ]
+}

@@ -27,6 +27,13 @@ foreach($includes as $include){
         $phar['includes/init/' . $filename] = file_get_contents($source_root . 'includes/init/' . $filename);
 }
 
+$lib = new DirectoryIterator($source_root . 'lib/');
+foreach($lib as $include){
+    $filename = $include->getFilename();
+    if($include->isFile())
+        $phar['lib/' . $filename] = file_get_contents($source_root . 'lib/' . $filename);
+}
+
 $phar->setStub("<?php
     Phar::mount('./', __DIR__);
     Phar::mapPhar();
