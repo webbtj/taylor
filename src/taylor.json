@@ -16,18 +16,20 @@
                     },
                     "database" : {
                         "host" : "localhost",
-                        "username" : "taylor_demo",
-                        "password" : "taylor_demo",
-                        "database" : "taylor_demo",
+                        "username" : "taylor_demo_db",
+                        "password" : "taylor_demo_db",
+                        "database" : "taylor_demo_db",
                         "admin_user" : "taylor_admin",
                         "admin_pass" : "taylor_admin"
                     },
                     "plugins" : [
                         {
-                            "name" : "custom-image-sizes"
+                            "name" : "custom-image-sizes",
+                            "main_file" : "filosofo-custom-image-sizes.php"
                         },
                         {
-                            "name" : "advanced-custom-fields"
+                            "name" : "advanced-custom-fields",
+                            "main_file" : "acf.php"
                         },
                         {
                             "name" : "smarty-for-wordpress"
@@ -39,7 +41,8 @@
                             "name" : "tinymce-advanced"
                         },
                         {
-                            "name" : "acf-field-date-time-picker"
+                            "name" : "acf-field-date-time-picker",
+                            "main_file" : "acf-date_time_picker.php"
                         }
                     ]
                 },
