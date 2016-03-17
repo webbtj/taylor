@@ -147,7 +147,7 @@
         },
         {
             "create_post_type" : {
-                "type" : "mdw_service",
+                "type" : "tlr_service",
                 "plural" : "Service",
                 "singular" : "Services",
                 "slug" : "services",
@@ -157,7 +157,7 @@
         },
         {
             "create_post_type" : {
-                "type" : "mdw_lawyer",
+                "type" : "tlr_lawyer",
                 "plural" : "Lawyers",
                 "singular" : "Lawyer",
                 "slug" : "lawyers",
@@ -166,7 +166,7 @@
         },
         {
             "create_post_type" : {
-                "type" : "mdw_life_event",
+                "type" : "tlr_life_event",
                 "plural" : "Life Events",
                 "singular" : "Life Event",
                 "slug" : "life-events",
@@ -175,27 +175,27 @@
         },
         {
             "post_to_post" : {
-                "from" : "mdw_lawyer",
-                "to" : "mdw_life_event"
+                "from" : "tlr_lawyer",
+                "to" : "tlr_life_event"
             }
         },
         {
             "post_to_post" : {
-                "from" : "mdw_lawyer",
-                "to" : "mdw_service"
+                "from" : "tlr_lawyer",
+                "to" : "tlr_service"
             }
         },
         {
             "post_to_post" : {
-                "from" : "mdw_life_event",
-                "to" : "mdw_service"
+                "from" : "tlr_life_event",
+                "to" : "tlr_service"
             }
         }
         ,
         {
             "post_to_post" : {
                 "from" : "post",
-                "to" : "mdw_service"
+                "to" : "tlr_service"
             }
         }
     ]
