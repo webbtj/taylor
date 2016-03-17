@@ -172,6 +172,31 @@
                 "slug" : "life-events",
                 "templates" : 1
             }
+        },
+        {
+            "post_to_post" : {
+                "from" : "mdw_lawyer",
+                "to" : "mdw_life_event"
+            }
+        },
+        {
+            "post_to_post" : {
+                "from" : "mdw_lawyer",
+                "to" : "mdw_service"
+            }
+        },
+        {
+            "post_to_post" : {
+                "from" : "mdw_life_event",
+                "to" : "mdw_service"
+            }
+        }
+        ,
+        {
+            "post_to_post" : {
+                "from" : "post",
+                "to" : "mdw_service"
+            }
         }
     ]
 }

@@ -1,10 +1,10 @@
 <?php
 
 class File{
-    public static function read($path){
+    public static function read($path, $absolute=false){
         global $phar;
 
-        if($phar)
+        if($phar && !$absolute)
             return file_get_contents('phar://taylor.phar/' . $path);
 
         return file_get_contents($path);
