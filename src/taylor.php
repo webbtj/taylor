@@ -25,8 +25,8 @@ class Taylor{
     }
 
     function manifest($args = null){
-        if(file_exists('./taylor.manifest.json')){
-            $manifest = object_to_array(json_decode(file_get_contents('./taylor.manifest.json')));
+        if(file_exists('./taylor.json')){
+            $manifest = object_to_array(json_decode(file_get_contents('./taylor.json')));
             if(empty($manifest) || empty($manifest['commands']))
                 throw new Exception("Mainfest file empty or invalid", 1);
 

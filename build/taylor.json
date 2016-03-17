@@ -6,19 +6,19 @@
                     "wordpress" : {
                         "version" : "latest",
                         "directory" : "../../wp",
-                        "salt" : 0,
-                        "site_title" : "MDW Law",
-                        "domain" : "http://www.mdwlaw.ca",
+                        "salt" : 1,
+                        "site_title" : "Taylor Demo",
+                        "domain" : "http://www.taylor.demo",
                         "public" : 0,
-                        "admin_username" : "admin",
-                        "admin_email" : "developers@norex.ca",
-                        "admin_password" : "norex"
+                        "admin_username" : "taylor",
+                        "admin_email" : "taylor@taylor.demo",
+                        "admin_password" : "taylor"
                     },
                     "database" : {
                         "host" : "localhost",
-                        "username" : "norex_mdwTT",
-                        "password" : "6ARmDlm1biI!IL3d",
-                        "database" : "norex_mdwTT",
+                        "username" : "taylor_demo_db",
+                        "password" : "taylor_demo_db",
+                        "database" : "taylor_demo_db",
                         "admin_user" : "taylor_admin",
                         "admin_pass" : "taylor_admin"
                     },
@@ -43,11 +43,11 @@
                         }
                     ]
                 },
-                "theme_dir" : "mdwlaw",
-                "project_name" : "MDW Law",
-                "project_uri" : "http://mdwlaw.ca",
-                "author_name" : "norex",
-                "author_uri" : "http://sitebynorex.com",
+                "theme_dir" : "taylor_demo",
+                "project_name" : "Taylor Demo",
+                "project_uri" : "http://taylor.demo",
+                "author_name" : "TJ Webb",
+                "author_uri" : "http://webb.tj",
                 "javascripts" : [
                     {
                         "path" : "../../clone/assets/bower_components/jQuery/dist/jquery.min.js",
