@@ -18,9 +18,20 @@ class DB{
             if($connection->error)
                 throw new Exception("MySQL Error: " . $connection->connect_error, 1);
 
-            $connection->query("GRANT ALL PRIVILEGES ON $database.* TO '$username' IDENTIFIED BY '$password' ");
-            if($connection->error)
-                throw new Exception("MySQL Error: " . $connection->connect_error, 1);
+            if(isset($connection_from)){
+                $connection->query("GRANT ALL PRIVILEGES ON $database.* TO '$username'@'$connection_from' IDENTIFIED BY '$password' ");
+                if($connection->error)
+                    throw new Exception("MySQL Error: " . $connection->connect_error, 1);
+            }else{
+                $connection->query("GRANT ALL PRIVILEGES ON $database.* TO '$username'@'%' IDENTIFIED BY '$password' ");
+                if($connection->error)
+                    throw new Exception("MySQL Error: " . $connection->connect_error, 1);
+                $connection->query("GRANT ALL PRIVILEGES ON $database.* TO '$username'@'localhost' IDENTIFIED BY '$password' ");
+                if($connection->error)
+                    throw new Exception("MySQL Error: " . $connection->connect_error, 1);
+            }
+
+            
 
             $connection->close();
         }else{
