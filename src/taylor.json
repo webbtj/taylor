@@ -51,6 +51,7 @@
                 "project_uri" : "http://taylor.demo",
                 "author_name" : "TJ Webb",
                 "author_uri" : "http://webb.tj",
+                "clone" : 1,
                 "javascripts" : [
                     {
                         "path" : "../../clone/assets/bower_components/jQuery/dist/jquery.min.js",

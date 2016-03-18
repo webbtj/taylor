@@ -8,6 +8,7 @@ require_once('lib/Validate.php');
 require_once('lib/WordPress.php');
 require_once('lib/DB.php');
 require_once('lib/Plugins.php');
+require_once('lib/Clone.php');
 $t = new Taylor();
 
 class Taylor{
@@ -85,6 +86,9 @@ class Taylor{
         File::copy('includes/init/page.tpl', 'templates/pages/page.tpl');
         File::copy('includes/init/404.tpl', 'templates/pages/404.tpl');
         File::copy('includes/init/single.tpl', 'templates/pages/single.tpl');
+
+        if($clone)
+            Clone::install();
 
         if($args['styles'])
             $this->add_assets($args['styles'], 'css');
