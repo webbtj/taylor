@@ -1,5 +1,7 @@
 <?php
 
+define('ASSET_VERSION', '0.0.1');
+
 function wp_smarty(){
     global $wp_smarty;
     if($wp_smarty)
