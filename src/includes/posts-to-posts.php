@@ -1,4 +1,3 @@
-<?php
 
 add_action('p2p_init', 'taylor_register_relationships');
 function taylor_register_relationships(){

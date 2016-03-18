@@ -20,7 +20,8 @@
                         "password" : "taylor_demo_db",
                         "database" : "taylor_demo_db",
                         "admin_user" : "taylor_admin",
-                        "admin_pass" : "taylor_admin"
+                        "admin_pass" : "taylor_admin",
+                        "connection_from" : "localhost"
                     },
                     "plugins" : [
                         {
