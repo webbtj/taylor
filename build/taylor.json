@@ -44,6 +44,17 @@
                         {
                             "name" : "acf-field-date-time-picker",
                             "main_file" : "acf-date_time_picker.php"
+                        },
+                        {
+                            "name" : "google-analytics-dashboard-for-wp",
+                            "main_file" : "gadwp.php"
+                        },
+                        {
+                            "name" : "wordpress-importer"
+                        },
+                        {
+                            "name" : "all-in-one-seo-pack",
+                            "main_file" : "all_in_one_seo_pack.php"
                         }
                     ]
                 },
