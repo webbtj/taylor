@@ -1,13 +1,20 @@
 <?php
 
-global $phar;
+global $phar, $taylor_path;
 $phar = false;
+
+$phar_location = Phar::running(false);
+if(!$phar_location)
+    $phar_location = __FILE__;
+
+$taylor_path = dirname($phar_location);
 
 require_once('lib/File.php');
 require_once('lib/Validate.php');
 require_once('lib/WordPress.php');
 require_once('lib/DB.php');
 require_once('lib/Plugins.php');
+require_once('lib/CloneInstaller.php');
 $t = new Taylor();
 
 class Taylor{
@@ -37,6 +44,57 @@ class Taylor{
                     $this->do_function($function, $args);
                 }
             }
+
+            $reward = "";
+            switch (mt_rand(1,15)) {
+                case 1:
+                    $reward = "a tea! 🍵";
+                    break;
+                case 2:
+                    $reward = "a cookie! 🍪";
+                    break;
+                case 3:
+                    $reward = "a doughnut! 🍩";
+                    break;
+                case 4:
+                    $reward = "ice cream! 🍦";
+                    break;
+                case 5:
+                    $reward = "a treat! 🍧";
+                    break;
+                case 6:
+                    $reward = "a fish cake! 🍥";
+                    break;
+                case 7:
+                    $reward = "a fried shrimp! 🍤";
+                    break;
+                case 8:
+                    $reward = "a roasted sweet potatoe! 🍠";
+                    break;
+                case 9:
+                    $reward = "fries! 🍟";
+                    break;
+                case 10:
+                    $reward = "spaghetti! 🍝";
+                    break;
+                case 11:
+                    $reward = "rice! 🍚";
+                    break;
+                case 12:
+                    $reward = "a drumstick! 🍗";
+                    break;
+                case 13:
+                    $reward = "a beer! 🍺";
+                    break;
+                case 14:
+                    $reward = "two beer! 🍻";
+                    break;
+                case 15:
+                    $reward = "meat! 🍖";
+                    break;
+            }
+
+            print "\nAll Done! Good Work! You deserve $reward\n";
         }
         else
             throw new Exception("Mainfest file not found", 1);
@@ -66,6 +124,9 @@ class Taylor{
         mkdir(WordPress::path('templates_c'), 0777);
         chmod(WordPress::path('templates_c'), 0777);
 
+        mkdir(WordPress::path('../../uploads'), 0777);
+        chmod(WordPress::path('../../uploads'), 0777);
+
         File::write(WordPress::path('templates_c/.gitignore'), "*\n!.gitignore");
 
         File::copy('includes/init/footer.php', 'footer.php');
@@ -85,6 +146,11 @@ class Taylor{
         File::copy('includes/init/page.tpl', 'templates/pages/page.tpl');
         File::copy('includes/init/404.tpl', 'templates/pages/404.tpl');
         File::copy('includes/init/single.tpl', 'templates/pages/single.tpl');
+
+        if( isset($args['clone']) && (bool) $args['clone'] ){
+            CloneInstaller::install(WordPress::path(), $args);
+            $this->using_clone = true;
+        }
 
         if($args['styles'])
             $this->add_assets($args['styles'], 'css');
@@ -279,11 +345,12 @@ class Taylor{
                 $media = $asset['media'];
 
             $is_copy = true;
-            if(isset($asset['copy']) && $asset['copy'] == false)
+            if( (isset($asset['copy']) && $asset['copy'] == false) || $asset['_is_clone'] )
                 $is_copy = false;
 
             //if it is a local file it MUST be copied, we're not going to reference local files outside the theme
-            if(!$is_url && strpos($asset['path'], '//') !== 0 )
+                //...except for clone
+            if(!$is_url && strpos($asset['path'], '//') !== 0 && !$asset['_is_clone'])
                 $is_copy = true;
 
             if($is_copy && $is_url){
@@ -345,7 +412,7 @@ class Taylor{
                     );
                 }
 
-            }elseif($is_url || strpos($asset['path'], '//') === 0){
+            }elseif($is_url || strpos($asset['path'], '//') === 0 || $asset['_is_clone']){
                 //use cdn
                 $includes[] = array(
                     'file' => $asset['path'],
@@ -370,7 +437,7 @@ class Taylor{
             $footer = (int) $include['footer'];
             $media = '';
             if($include['media'] && $type == 'css')
-                $media = ", '$media'";
+                $media = ", '" . $include['media'] . "'";
 
             if($include['reset_jquery'] && $type == 'js')
                 $output .= "\twp_deregister_script('jquery');\n";
@@ -439,9 +506,10 @@ class Taylor{
         $parts = explode('/', $file_name);
         $file = array_pop($parts);
         $parts = explode('.', $file);
-        $slug = $parts[0];
+        array_pop($parts);
+        $slug = implode('-', $parts);
         $slug = strtolower($slug);
-        $slug = preg_replace('/[^a-zA-Z0-9]/', '', $slug);
+        $slug = preg_replace('/[^a-zA-Z0-9-]/', '', $slug);
         return $slug;
     }
 
