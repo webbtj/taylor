@@ -242,13 +242,17 @@ class Taylor{
         if($to == 'post')
             $single_to = 'single';
 
-        $from_posttype = File::read(WordPress::path($single_from . '.php'), true);
-        $from_output = str_replace('get_header();', "get_header();\n" . $from_output, $from_posttype);
-        File::write(WordPress::path($single_from . '.php'), $from_output);
-
-        $to_posttype = File::read(WordPress::path($single_to . '.php'), true);
-        $to_output = str_replace('get_header();', "get_header();\n" . $to_output, $to_posttype);
-        File::write(WordPress::path($single_to . '.php'), $to_output);
+        if(File::exists(WordPress::path($single_from . '.php'))){
+            $from_posttype = File::read(WordPress::path($single_from . '.php'), true);
+            $from_output = str_replace('get_header();', "get_header();\n" . $from_output, $from_posttype);    
+            File::write(WordPress::path($single_from . '.php'), $from_output);
+        }
+        
+        if(File::exists(WordPress::path($single_to . '.php'))){
+            $to_posttype = File::read(WordPress::path($single_to . '.php'), true);
+            $to_output = str_replace('get_header();', "get_header();\n" . $to_output, $to_posttype);
+            File::write(WordPress::path($single_to . '.php'), $to_output);
+        }
 
         //
         $output = File::read('includes/related-post.tpl');
@@ -265,13 +269,17 @@ class Taylor{
         if($to == 'post')
             $single_to = 'single';
 
-        $from_template = File::read(WordPress::path('templates/pages/' . $single_from . '.tpl'), true);
-        $from_output = str_replace('{$content}', "{\$content}\n" . $from_output, $from_template);
-        File::write(WordPress::path('templates/pages/' . $single_from . '.tpl'), $from_output);
-
-        $to_template = File::read(WordPress::path('templates/pages/' . $single_to . '.tpl'), true);
-        $to_output = str_replace('{$content}', "{\$content}\n" . $to_output, $to_template);
-        File::write(WordPress::path('templates/pages/' . $single_to . '.tpl'), $to_output);
+        if(File::exists(WordPress::path('templates/pages/' . $single_from . '.tpl'))){
+            $from_template = File::read(WordPress::path('templates/pages/' . $single_from . '.tpl'), true);
+            $from_output = str_replace('{$content}', "{\$content}\n" . $from_output, $from_template);
+            File::write(WordPress::path('templates/pages/' . $single_from . '.tpl'), $from_output);
+        }
+        
+        if(File::exists(WordPress::path('templates/pages/' . $single_to . '.tpl'))){
+            $to_template = File::read(WordPress::path('templates/pages/' . $single_to . '.tpl'), true);
+            $to_output = str_replace('{$content}', "{\$content}\n" . $to_output, $to_template);
+            File::write(WordPress::path('templates/pages/' . $single_to . '.tpl'), $to_output);
+        }
     }
 
     function create_taxonomy($args){
