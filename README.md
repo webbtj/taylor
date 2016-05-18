@@ -2,13 +2,13 @@
 
 ##UPDATES!##
 ####September 12, 2015####
-Some majour updates have been rolled in recently, including:
+Some major updates have been rolled in recently, including:
 * Download WordPress (with the option of specifying a specific version)!
 * Custom Theme is automatically activated
 * Create DB User and DB if necessary
 * Install and Activate WordPress!
 * Automatically Download, Install and Activate Plugins!
-* Plugins downlaod from the Codex, provide an optional url param to install from anywhere
+* Plugins download from the Codex, provide an optional url param to install from anywhere
 * Specify Plugin version (optional)
 * Create and update wp-config.php with DB credentials and salts.
 
@@ -27,16 +27,16 @@ Since a lot of things have at least been started, here is the updated roadmap. N
 * [ ] Refactoring! The code isn't a complete mess, yet, but it's on it's way.
 * [ ] Automated content generation: when defining content types, let's create some sample content (optionally).
 * [ ] Menu generation, should probably tie into the previous item somehow.
-* [ ] Define assests (js/css) with location (header/footer) in manifest (built, needs more testing).
+* [ ] Define assets (js/css) with location (header/footer) in manifest (built, needs more testing).
 * [ ] While keeping the manifest file, let's drop the need to specify it when running the application, in other words, completely ditch the whole idea of passing different arguments to the application
-* [ ] Better security, allow manifest to ommit passwords and, instead, prompt the user for them.
+* [ ] Better security, allow manifest to omit passwords and, instead, prompt the user for them.
 * [ ] Create custom fields with ACF.
 * [ ] Update the documentation instead of just putting this Updates section at the top and leaving the rest.
 
 ##ORIGINAL DOCS##
 
 ###Overview
-Taylor is a bootstrapping tool for WordPress to help aleviate some of the pains and monotony of starting a new custom WordPress theme from scratch. Taylor takes a few command line arguments (or a manifest file) and streamlines processes such as creating a new theme with skeleton files (`functions.php`, `style.css`, headers and footers, etc.), creating custom post types, creating index pages for those post types, and creating templates for post types and index pages. There is a lot more planned in Taylor's immediate future, including custom fields support, but for now, in this pre-alpha phase, we're sticking to the basics.
+Taylor is a bootstrapping tool for WordPress to help alleviate some of the pains and monotony of starting a new custom WordPress theme from scratch. Taylor takes a few command line arguments (or a manifest file) and streamlines processes such as creating a new theme with skeleton files (`functions.php`, `style.css`, headers and footers, etc.), creating custom post types, creating index pages for those post types, and creating templates for post types and index pages. There is a lot more planned in Taylor's immediate future, including custom fields support, but for now, in this pre-alpha phase, we're sticking to the basics.
 
 ###Quick Start
 Just want to dig in an use it? Give the MANIFEST.md file a read and download the `taylor.phar` file from the `build` directory. Within your themes directory create a new folder, this is NOT the folder for your theme, this is a folder to put taylor in. Create a `taylor.manifest.json` file in the same directory. From the command line run `php taylor.phar manifest`.
@@ -50,13 +50,13 @@ Taylor doesn't require any WordPress plugins to run, though the theme is creates
 
 ###Command Line Usage
 
-###Mainfest Usage
+###Manifest Usage
 Aside from regular command line usage, Taylor's real power lies in its manifest file system. Using the manifest file you can automate initial theme setup, asset inclusion (js & css), post type and taxonomy setup. The manifest file is a json file and must be named taylor.manifest.json. The manifest file must be in the same directory as the Taylor script. For technical requirements read the MANIFEST.md document and review the example taylor.manifest.json file included in the src directory.
 
 ###Road Map
 
 * Advanced Custom Field integration
-* Define assests (js/css) with location (header/footer) in manifest (built, needs more testing)
+* Define assets (js/css) with location (header/footer) in manifest (built, needs more testing)
 * Compress to Phar for portability (done, needs more testing)
 * Install & activate plugins via manifest
 * Set various configuration options via manifest
