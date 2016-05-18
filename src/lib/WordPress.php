@@ -139,8 +139,8 @@ class WordPress{
             $config = file_get_contents($wp_config);
             $config = preg_replace($patterns, $replacements, $config);
 
-            if(isset($WP_CONFIG['updates'])){
-                $updates = var_export((bool)$WP_CONFIG['updates'], true);
+            if(isset($WP_CONFIG['disable_updates'])){
+                $updates = var_export((bool)$WP_CONFIG['disable_updates'], true);
                 $auto_update_str = "// Controls the behaviour of automatic Wordpress updates\ndefine( 'AUTOMATIC_UPDATER_DISABLED', $updates );\n\n/**#@+";
                 $config = str_replace("/**#@+", $auto_update_str, $config );
             }
