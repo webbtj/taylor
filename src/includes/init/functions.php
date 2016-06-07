@@ -9,6 +9,12 @@ function wp_smarty(){
 
     $wp_smarty = smarty_get_instance();
 
+    $wp_smarty  ->setTemplateDir(dirname(__FILE__) . '/templates')
+                ->setCompileDir(dirname(__FILE__) . '/templates_c');
+
+    $stylesheet_directory = get_bloginfo('stylesheet_directory');
+    $wp_smarty->assign('stylesheet_directory', $stylesheet_directory);
+
     /* ALWAYS REMEMEBER TO RESET QUERY!!! */
 
     //Load Menus
@@ -53,7 +59,7 @@ function get_sized_image_src($image, $size='full'){
 //requires posts to posts plugin
 function get_related_posts($relationship, $post_id = null, $additional_args = array(), $custom_fields = array()){
     global $post;
-    
+
     if(!$post_id)
         $post_id = $post->ID;
 
