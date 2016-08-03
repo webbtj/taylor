@@ -2,16 +2,16 @@
 
 class CloneInstaller{
     public static function install($path, &$args){
-        $url = 'https://gitlab.com/norex/app_clone/repository/archive.zip?ref=dist';
+        $url = 'https://github.com/joshdrink/clone/archive/master.zip';
 
-        exec("wget -O archive.zip $url");
-        exec("unzip archive.zip");
-        exec("cp -r app_clone-dist-*/assets $path");
+        exec("wget -O clone-master.zip $url");
+        exec("unzip clone-master.zip");
+        exec("cp -r clone-master/assets $path");
 
         CloneInstaller::add_assets($args);
         // exit;
-        exec("rm -rf app_clone-dist-*");
-        exec("rm -rf archive.zip");
+        exec("rm -rf clone-master");
+        exec("rm -rf clone-master.zip");
 
     }
 
@@ -24,7 +24,7 @@ class CloneInstaller{
         $paths = new DirectoryIterator($taylor_path . '/');
         foreach($paths as $path){
             $pathname = $path->getFilename();
-            if($path->isDir() && strpos($pathname, 'app_clone-dist-') !== false)
+            if($path->isDir() && strpos($pathname, 'clone-master') !== false)
                 $clone_path = $pathname;
         }
 
@@ -82,7 +82,7 @@ class CloneInstaller{
         }
 
         if($clones_added){
-            print "\nClone was successfully added to your theme. Your should run `bower install` from `assets` within your custom theme directory.\n";
+            print "\nClone was successfully added to your theme. Your should run `npm install`, followed by `npm run clone` from `assets` within your custom theme directory.\n";
         }
     }
 }
