@@ -48,7 +48,7 @@ class WordPress{
 
         if($_PATH == '/')
             throw new Exception("Could not find WordPress theme directory", 1);
-        
+
         if(!file_exists($_PATH . '/wp-content'))
             WordPress::set_path();
         else{
@@ -125,7 +125,7 @@ class WordPress{
                 }else{
                     throw new Exception("Could not generate salts for WP config file.", 1);
                 }
-                
+
                 $patterns[] = '/define\\(\'AUTH_KEY\',\s+\'.*\'\\);/';
                 $patterns[] = '/define\\(\'SECURE_AUTH_KEY\',\s+\'.*\'\\);/';
                 $patterns[] = '/define\\(\'LOGGED_IN_KEY\',\s+\'.*\'\\);/';
@@ -138,6 +138,12 @@ class WordPress{
 
             $config = file_get_contents($wp_config);
             $config = preg_replace($patterns, $replacements, $config);
+
+            if(isset($WP_CONFIG['disable_updates'])){
+                $updates = var_export((bool)$WP_CONFIG['disable_updates'], true);
+                $auto_update_str = "// Controls the behaviour of automatic Wordpress updates\ndefine( 'AUTOMATIC_UPDATER_DISABLED', $updates );\n\n/**#@+";
+                $config = str_replace("/**#@+", $auto_update_str, $config );
+            }
 
             File::write($wp_config, $config);
         }
